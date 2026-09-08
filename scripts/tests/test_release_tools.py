@@ -32,12 +32,12 @@ changelog_html = load_script("changelog_html", "changelog-to-html.py")
 class ChangelogTests(unittest.TestCase):
     def test_current_release_is_bilingual_and_renderable(self) -> None:
         lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines(True)
-        notes = changelog_tools.release_notes("2026.9.1", lines)
+        notes = changelog_tools.release_notes("2026.9.2", lines)
         self.assertTrue(notes.startswith("### 中文\n"))
         self.assertLess(notes.index("### 中文"), notes.index("### English"))
         html = changelog_html.to_html(
             changelog_tools.trim_section(
-                changelog_tools.extract_section("2026.9.1", lines)
+                changelog_tools.extract_section("2026.9.2", lines)
             )
         )
         self.assertIn("<h3>中文</h3>", html)
@@ -53,13 +53,13 @@ class ChangelogTests(unittest.TestCase):
 
 
 class ReleaseVersionTests(unittest.TestCase):
-    def test_current_version_is_the_successor_to_failed_2026_9_0_candidate(self) -> None:
+    def test_current_version_is_the_successor_to_failed_2026_9_1_candidate(self) -> None:
         release_version.validate_release(
-            version="2026.9.1",
-            tag="v2026.9.1",
-            build="21",
-            previous_version="2026.9.0",
-            previous_build="20",
+            version="2026.9.2",
+            tag="v2026.9.2",
+            build="22",
+            previous_version="2026.9.1",
+            previous_build="21",
         )
 
     def test_rejects_skipped_patch_and_reused_build(self) -> None:
@@ -80,8 +80,8 @@ class ReleaseVersionTests(unittest.TestCase):
         )
         versions = set(re.findall(r"MARKETING_VERSION = ([^;]+);", project))
         builds = set(re.findall(r"CURRENT_PROJECT_VERSION = ([^;]+);", project))
-        self.assertIn("2026.9.1", versions)
-        self.assertIn("21", builds)
+        self.assertIn("2026.9.2", versions)
+        self.assertIn("22", builds)
 
 
 class AppcastTests(unittest.TestCase):
@@ -135,13 +135,16 @@ class RepositoryContractTests(unittest.TestCase):
         promote = (ROOT / ".github" / "workflows" / "promote-release.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn("./scripts/test.sh", ci)
+        self.assertNotIn("./scripts/test.sh", ci)
+        self.assertNotIn("./scripts/test.sh", release)
+        self.assertIn("python3 -m unittest discover -s scripts/tests", ci)
+        self.assertIn("./scripts/build-app.sh --variant production", ci)
         self.assertIn("./scripts/build-app.sh --variant production", release)
         self.assertIn("--prerelease", release)
         self.assertIn("update-appcast.py", promote)
         self.assertIn("./scripts/release-metadata.sh version", release)
 
-    def test_ci_resets_only_the_user_xctest_daemon_before_full_tests(self) -> None:
+    def test_full_test_script_resets_only_the_user_xctest_daemon_in_ci_mode(self) -> None:
         script = (SCRIPTS / "test.sh").read_text(encoding="utf-8")
         self.assertIn('if [ "${CI:-}" = "true" ]', script)
         self.assertIn("killall testmanagerd", script)

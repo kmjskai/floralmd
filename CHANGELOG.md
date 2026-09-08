@@ -11,7 +11,7 @@ first, with `#### 新增` / `#### 变更` / `#### 修复` categories as needed; 
 complete `### English` block follows, using the corresponding Keep a Changelog
 categories. Language is never marked with inline bold labels.
 
-## [2026.9.1] — 2026-09-08
+## [2026.9.2] — 2026-09-08
 
 ### 中文
 

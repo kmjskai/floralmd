@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: test
+  verify:
+    name: release controls and production build
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
@@ -39,5 +39,10 @@ jobs:
           key: xcode-spm-v1-macos26-${{ runner.os }}-${{ hashFiles('FloralMD.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: xcode-spm-v1-macos26-${{ runner.os }}-
 
-      - name: Test
-        run: ./scripts/test.sh
+      - name: Test release controls
+        run: python3 -m unittest discover -s scripts/tests
+
+      # Full AppKit/XCTest coverage stays in the local pre-release gate. The
+      # hosted headless runner cannot reliably connect to the launched test app.
+      - name: Build secret-free production candidate
+        run: ./scripts/build-app.sh --variant production

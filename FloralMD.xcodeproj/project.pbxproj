@@ -692,7 +692,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
@@ -702,7 +702,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Must stay prefixed by the parent app's id: Debug parent = *.dev. */
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.dev.quicklook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -723,7 +723,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
@@ -733,7 +733,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.quicklook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -752,7 +752,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
@@ -762,7 +762,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Must stay prefixed by the harness parent app's id (Debug = *.harness.dev). */
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness.dev.quicklook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -783,7 +783,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
@@ -793,7 +793,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness.quicklook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -933,7 +933,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				ENABLE_APP_SANDBOX = NO;
 				/* 纯编辑器主产品直接访问用户选择的磁盘目录；安装/校验脚本
@@ -960,7 +960,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Dev identity: separate bundle id/scheme/display name so the
 				   Debug build never collides with the released app (notifications,
 				   URL scheme routing, and UserDefaults stay isolated). The name
@@ -993,7 +993,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				ENABLE_APP_SANDBOX = NO;
 				/* 纯编辑器主产品直接访问用户选择的磁盘目录；安装/校验脚本
@@ -1020,7 +1020,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Release identity: the shipped bundle id/scheme/display name. */
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd;
 				FLORALMD_DISPLAY_NAME = FloralMD;
@@ -1046,7 +1046,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				ENABLE_APP_SANDBOX = NO;
 				/* Harness 形态：不沙盒（内嵌 dsh 需要 localhost 服务/进程托管），
@@ -1073,7 +1073,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Dev identity: separate bundle id/scheme/display name so the
 				   Debug build never collides with the released app (notifications,
 				   URL scheme routing, and UserDefaults stay isolated). The name
@@ -1105,7 +1105,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = XBA825KHJZ;
 				ENABLE_APP_SANDBOX = NO;
 				/* Harness 形态：不沙盒（内嵌 dsh 需要 localhost 服务/进程托管）。 */
@@ -1131,7 +1131,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2026.9.1;
+				MARKETING_VERSION = 2026.9.2;
 				/* Release identity: the shipped bundle id/scheme/display name. */
 				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness;
 				FLORALMD_DISPLAY_NAME = "FloralMD Harness";
