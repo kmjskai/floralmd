@@ -32,16 +32,12 @@ jobs:
           xcodebuild -version
           swift --version
 
-      # Cache the SwiftPM build (deps + compiled objects) keyed on the resolved
-      # dependency graph, so green runs don't recompile SwiftMath etc. each time.
-      - name: Cache .build
+      - name: Cache Swift packages
         uses: actions/cache@v5
         with:
-          path: .build
-          # v3-macos26 isolates this cache from Xcode 16 artifacts created by
-          # the retired macos-14 runner.
-          key: spm-v3-macos26-${{ runner.os }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: spm-v3-macos26-${{ runner.os }}-
+          path: build/SourcePackages
+          key: xcode-spm-v1-macos26-${{ runner.os }}-${{ hashFiles('FloralMD.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: xcode-spm-v1-macos26-${{ runner.os }}-
 
       - name: Test
-        run: swift test
+        run: ./scripts/test.sh

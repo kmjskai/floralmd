@@ -1,537 +1,263 @@
-<!-- Modified from Edmund by Yingkai Sun for FloralMD. -->
-# FloralMD 架构概览
+# FloralMD 统一工作区架构
 
-本文档介绍 FloralMD 的主要技术结构、核心约束和常用代码入口。
+本文给工程维护者与后续 Codex 任务说明实现边界。产品行为以 [PRODUCT.md](PRODUCT.md) 为准，当前证据以 [PROGRESS.md](PROGRESS.md) 为准。
 
-## 1. 项目定位
+## 1. 核心数据模型
 
-FloralMD 是一款原生 macOS Markdown 编辑器，强调直接打开任意位置的单个文件、行内实时渲染和本地优先。项目使用 Swift、AppKit、TextKit 2 与 Swift Package Manager，最低支持 macOS 14。
+| 模型 | 职责 | 产品编号 |
+| --- | --- | --- |
+| `DraftWorkspaceLayout` | 给出 `notes/`、Markdown 图片与 Draft 绘图源的标准路径，并准备基础目录 | WS-01、NEW-01、NEW-02、DRAW-01、PASTE-01 |
+| `ResourceKind` | 将 Markdown、`.excalidraw`、PNG/JPG/JPEG/GIF/WebP/SVG 归为三类 Surface | OPEN-01、SURFACE-01、IMAGE-01 |
+| `ActiveResource` | 保存当前资源的标准化 URL 与类型；它是中央 Surface 的唯一选择输入 | BROWSE-01、SURFACE-01 |
+| `WorkspaceSession` | 保存工作区根、Draft/文件推导/显式选择类型与活动资源 | OPEN-01、OPEN-02、OPEN-03 |
+| `WorkspaceWindowState` | 保存显式工作区标准化路径，作为 SwiftUI 窗口恢复与去重身份 | OPEN-03 |
+| `WorkspaceResolver` | 实现 Draft 优先、外部同级、无目标回落 Draft 的解析规则 | OPEN-01、OPEN-02 |
+| `DrawingSVGSyncPolicy` | 表达 Draft-only、全部绘图、从不三种自动 SVG 决策 | DRAW-02 |
+| `DrawingOriginalImageRequest` | 验证图片元素桥接载荷并保留原始 BinaryFile 字节 | DRAW-03 |
 
-主要目标包括：
+`WorkspaceResolver` 不搜索祖先目录、不创建 `.floralmd`、不修改文件。`WorkspaceSession` 要求活动资源始终位于会话根之内。
 
-- 无需 Vault 或工作区即可打开 `.md` 文件；
-- 在同一窗口中通过原生标签页处理多个文档；
-- 编辑时提供行内实时渲染，阅读时提供完整 HTML 渲染；
-- 保持 Markdown 文件内容可移植，不引入专有存储格式。
+## 2. 窗口与控制流
 
-## 2. 构建与测试
-
-```bash
-swift build
-swift test
-./scripts/build-app.sh
-```
-
-普通本地构建生成 `build/FloralMD-Debug.app`：bundle ID、偏好、日志和可执行文件
-均与正式版隔离，不声明 Markdown 文档类型，也不包含 Sparkle。只有调试 Quick Look
-时才显式运行 `./scripts/build-app.sh --with-quick-look`，此时嵌入使用独立 ID 的
-Debug Quick Look 扩展。`--variant production` 只供发布脚本与 Release CI 使用；
-日常正式版必须从 GitHub Release DMG 安装。
-
-Finder 会优先使用 `Contents/Resources/*.lproj/InfoPlist.strings` 中的本地化
-名称，而不是主 `Info.plist`。构建脚本因此必须在复制共享本地化资源后覆盖 Debug
-专用名称，并逐语言验证 `CFBundleName` 与 `CFBundleDisplayName`；只检查主 plist
-不能证明 Debug 的显示身份已隔离。
-
-Quick Look `.appex` 是独立 bundle，不能依赖宿主图标或 IconServices 的历史回退。
-Production 与专项 Debug 扩展都在自己的 `Info.plist` 中以 `CFBundleIconFile`
-声明 `AppIcon`，并在 `Contents/Resources` 内携带与宿主逐字节相同的
-`AppIcon.icns`；构建时还会把扩展的营销版本与构建号同步到宿主，确保系统能识别
-新的扩展资源。扩展也不能依赖宿主 App 中的 SwiftPM 资源包：代码块高亮会通过
-`Bundle.module` 读取 `FloralMD_FloralMDCore.bundle` 中的语法 JSON，因此 `.appex`
-必须在自己的 `Contents/Resources` 中携带该资源包，并使用 Xcode 生成、可从
-`Bundle.main.resourceURL` 查找资源的访问器。`scripts/build-app.sh` 会在签名后的
-bundle 验证这些条件。
-`AppIcon.icns` 还必须保留 alpha 通道：若圆角图标以不透明 RGB 画布封装，Finder
-和 DMG 会把圆角外的画布显示成白色方块。构建脚本会在复制资源前用 `sips` 拒绝
-这种产物，`Resources/AppIcon.png` 与 `docs/assets/AppIcon/` 中的派生 PNG 也统一
-保留透明角。
-
-Swift Package 包含三个主要 Target：
-
-- `FloralMDCore`：解析、编辑、渲染与文档模型；
-- `floralmd`：基于 `NSDocument` 的应用外壳、窗口、菜单和设置；
-- `FloralMDQuickLook`：Finder Quick Look 扩展。
-
-## 3. 两项核心约束
-
-### 3.1 文本存储始终等于原始 Markdown
-
-编辑器的渲染只修改富文本属性，不插入或删除展示字符。Markdown 标记通过近乎零尺寸的字体与透明颜色隐藏，但底层字符串保持不变。因此：
-
-- 展示位置与源码位置一一对应；
-- 保存时无需从富文本反向还原 Markdown；
-- 不使用会向文本中插入替代字符的 `NSTextAttachment`。
-
-### 3.2 只使用 TextKit 2
-
-编辑器通过 `NSTextLayoutManager` 使用 TextKit 2 的视口布局能力。代码不得访问 `NSTextView.layoutManager`，也不得写入 `NSTextBlock` 或 `NSTextTable` 属性，否则 AppKit 可能静默切回 TextKit 1，并破坏大文档性能和自定义绘制。
-
-## 4. 编辑与渲染流程
+应用入口是带 `WorkspaceWindowState` 恢复值的 `WindowGroup`，每个窗口独立持有 `WorkspaceController`，不再由 `DocumentGroup` 绑定单个 Markdown。控制流如下：
 
 ```text
-Markdown 源码
-    ↓ BlockParser
-逻辑块列表
-    ↓ SyntaxHighlighter + styleBlock
-富文本属性
-    ↓ TextKit 2
-编辑器画面
+启动 / Finder open / 快速记录 / 侧栏选择
+                    │
+                    ▼
+           WorkspaceOpenRouter
+                    │
+                    ▼
+            WorkspaceController
+        解析会话、保存脏 Markdown、切换活动资源
+                    │
+          ┌─────────┼─────────┐
+          ▼         ▼         ▼
+      Markdown   Drawing    Image
+      Surface    Surface    Surface
 ```
 
-- `BlockParser` 将源码拆分为段落、标题、列表、引用、代码块、表格，以及文档首部
-  YAML front matter 和行首 `%%` 多块注释等逻辑块；
-- `SyntaxHighlighter` 识别 CommonMark、GFM 与 FloralMD 支持的扩展语法。
-  `MarkdownFeatures` 是 Edit 与 Read 共用的独立能力集合；关闭某项后对应源码按
-  字面量保留。GitHub 的 `NOTE` / `TIP` / `IMPORTANT` / `WARNING` / `CAUTION`
-  alerts 与 Obsidian 专属 callout 类型分别开关，可折叠 `[-+]` 也单独控制；
-- 围栏代码块通过 `CodeHighlighter` 的可插拔后端产生相对源码的 UTF-16 token，
-  编辑与阅读模式共用 CotEditor 对齐的九类 scope 和同一调色板。默认
-  `BuiltinSyntaxBackend` 从包内 `Resources/Syntaxes/*.json` 加载语言定义；
-  `~/Library/Application Support/FloralMD/Syntaxes` 中同名 JSON 可覆盖内置定义，
-  但别名不能覆盖另一语言的 canonical id。用户文件按文件名确定性加载，超过
-  512 KiB、非普通文件、不可读或 schema 非法时均忽略并记录在
-  `SyntaxDefinitionStore.loadIssues`，不影响其余定义；无语言围栏默认纯文本，
-  未知但显式标注的语言保留通用 C-family 回退。非活动围栏保留等长、等行高的
-  原始字符但清除其墨迹，并由 TextKit 2 fragment 在代码块左上直接绘制克制的
-  语言标签；阅读 HTML 在代码块顶部绘制同一标签。两种模式都复用语法定义的展示名，
-  无语言及 plain-text aliases 不绘制。编辑模式的 fenced code block 还以逐段平铺的
-  `.blockDecoration` 绘制不改变行高、换行或选区几何的浅/深色背景和 8pt 圆角边界；
-  语言标签与复制按钮复用 Read mode 的块级锚点（左上 12/9pt、右上 8/8pt），由事件
-  穿透的前景视图绘制，避免紧凑开围栏 fragment 被后续代码行背景覆盖；它们不依赖
-  首行文字的 typographic bounds，因此用户行距变化不会造成控件漂移；鼠标悬停
-  只扫描 TextKit 2 已布局的 viewport fragment，并由事件透传的前景子视图显示复制
-  控件。复制 payload 来自 `.codeBlockPresentation` 保存的原始 content range，不含
-  fence 或语言名；点击只写剪贴板和控件反馈，不重组 storage、不移动选区或抢 first
-  responder。活动代码块若开围栏 info string 占用右上区域，控件移到块内首个不重叠的
-  已布局行，raw Markdown 继续优先可编辑；
-- `styleBlock(_:cursorPosition:)` 为单个逻辑块生成展示属性；
-- 光标所在块显示原始 Markdown 标记，其他块显示渲染结果；
-- 编辑后只重新解析和渲染受影响的区域，大文档使用延迟样式与视口提升控制开销。
-- Tab / Shift-Tab 重建列表缩进后必须按新源码范围重新定位 dirty blocks，不能沿用
-  编辑前的 block 索引。CommonMark lazy continuation 会让深层列表在普通引用之后
-  归入引用 block；反向操作也可能拆分 block，因此缩进前后的 block 数并不稳定。
-- 鼠标点击切换活动块时，普通点击必须在 `super.mouseDown` 前保存源码驱动的视口
-  锚点；应用切回点击则必须使用编辑器仍持有输入焦点、应用即将失活时保存的锚点，
-  因为 `didBecomeActive` 或 `mouseDown` 时 AppKit 可能已经显露旧选区并移动视口。
-  应用激活通知先立即恢复一次，并在下一轮事件循环结算一次，避免标题栏激活与稍后
-  正文点击之间暴露跳动。TextKit 2 可能在两次恢复之间短暂呈现估算片段几何；编辑器
-  因此在 `willBecomeActive` 到结算完成之间显示失焦时缓存的非交互视口快照，并隐藏
-  下方正文绘制，避免把该错误中间帧提交到窗口。随后锚点只由首次正文点击消费（不按
-  墙钟时间过期；主动键盘输入取消它，主动滚动把它更新到新视口）：
-  `super.mouseDown` 返回前立即恢复，异步活动块重组再保留同一锚点；不能用跨多轮
-  selection/layout callback 的全局滚动锁。任何通过 `NSClipView.scroll(to:)` 完成的
-  锚点补偿都必须随后调用 TextKit 2 `layoutViewport()`；只刷新滚动条会让新视口
-  暂时没有可绘制 fragment，表现为正文空白直到用户再次滚动。
-- `NSText.didChangeNotification` 早于 `rawSource` 与块范围同步；依赖行号或
-  解析结果的界面（例如 Git gutter）必须监听
-  `.editorDidSynchronizeText`，不能直接在系统文本通知中刷新。
-- 编辑器使用与 `NSTextView` 内建撤销相互独立的源码快照栈，因此
-  `NSDocument` change count 必须按自定义撤销组同步：每个新组只发送一次
-  `.changeDone`，Undo/Redo 分别发送 `.changeUndone` / `.changeRedone`，格式化、
-  缩进和输入法恢复也必须发送 `.editorDidSynchronizeText`。保存 token 会切断当前
-  输入合并组，否则保存后继续输入可能被并入保存前的撤销组而保持错误的干净状态。
-- 外部文件修改同时由 `NSFilePresenter` 和 `ExternalFileMonitor` 检测：前者
-  覆盖协调写入，后者用 vnode 事件覆盖命令行工具以及“写临时文件后原子替换”
-  的编辑器，并在 inode 被替换后重新挂载。未编辑文档自动调用
-  `EditorTextView.reloadContent`；若本地也有未保存修改，则按“冲突处理”设置
-  保留、询问或载入磁盘版本。重载会保留仍然有效的选区并清空旧撤销历史；
-  输入法存在 marked text 时必须延迟到组合提交后，不能直接替换 TextKit 存储。
-  `DispatchSource.resume()` 返回不代表 vnode 监听已经注册；需要紧接着写入的测试
-  必须等待 registration handler 确认就绪，不能用 sleep 或延长超时猜测注册时序。
+- `WorkspaceHostView` 获取并准备 Draft 根，然后创建控制器。
+- `WorkspaceOpenRouter` 缓冲早于窗口创建到达的 Finder URL；控制器接入后再处理。
+- `WorkspaceOpenRouter` 登记多个 controller/window；菜单与 Finder 路由优先使用 key window，显式打开同根时激活已有窗口。窗口关闭与 App 退出按 owner 分发，避免一个窗口覆盖另一个的 dirty 保护。
+- `WorkspaceContentView` 组合统一侧栏、大纲、中央 Surface、标题、置顶、透明度与工具栏。
+- `WorkspaceSidebarView` 递归列出普通目录与普通文件；隐藏项、package 和符号链接跳过，不可读子目录降级为带错误的目录行。只有 `ResourceKind` 支持项改变 `ActiveResource`，其他文件留给 Quick Look、Finder 与文件操作。
+- `WorkspaceFileCatalog` 记录文件系统 resource identifier；刷新通知以 120ms 合并。展开状态按目录身份保存，`WorkspaceController` 用活动文件身份识别外部父目录/文件改名。活动项消失时进入明确的 missing 状态，Markdown 保存不会重新制造旧路径。
+- Files 交互统一形成 `WorkspaceFileOperationRequest`：侧栏按钮、聚焦键盘命令、剪贴板和目录 drop 先做纯路由，再由 `WorkspaceContentView` 执行 dirty Markdown 前检，最后交给文件服务。成功结果重定向活动 URL、同步选择，并只发出一次合并刷新通知。
+- `.excalidraw` 使用嵌入模式的既有 Excalidraw 视图；标准 App 场景不再声明独立绘图窗口。
 
-## 5. TextKit 2 自定义绘制
+对应 SURFACE-01、MD-01、DRAW-01、IMAGE-01、AUX-01。
 
-`DecoratedTextLayoutFragment` 是 FloralMD 的主要绘制扩展点：
+### 小窗口宽度预算
 
-- 插入点由 AppKit 原生绘制。输入法 marked text 尚未提交时，`rawSource` 有意不包含
-  组合串；不能为了刷新光标而同步或重写存储。TextKit 2 完成异步 fragment 重排后，
-  必须调用 `updateInsertionPointStateAndRestartTimer`，否则原生光标可能暂时沿用上一
-  行的旧垂直几何；
-- 光标遇到由换行界定的空段落时（包括文档中间与文末），TextKit 2 可能还没有
-  该段自己的 fragment，而把边界位置吸收到上一段 fragment。此时从前一行合成
-  空行几何；行进距离必须额外包含用户的
-  `lineSpacing + paragraphSpacingBefore`，否则短光标会在首字符形成真实 fragment
-  时向下跳。合成空行的自身高度必须匹配 AppKit 的实际字体行框，不能把 spacing
-  塞进高度或向上取整，否则连续空行会累积偏移。显式插入点必须优先使用合成几何；
-  输入法 marked text 仍优先使用其真实 TextKit 2 几何。打字机模式同时
-  扩展文本视图底部可滚动空间，让 Return 后立即居中；
-  文本编辑完成后必须在 `rawSource` 同步与打字机回正之后同步刷新显式插入点，
-  不能只依赖 selection change 安排的下一轮刷新，否则视口已到新空行时短光标仍会
-  短暂画在旧行；
-  不得往 Markdown 存储插入占位字符。关闭打字机模式时必须清除这段临时最小高度；
-- `.blockDecoration` 绘制 Callout、引用竖线、表格边框、分隔线、代码背景和列表缩进引导线；
-- `.fragmentOverlay` 在字符位置绘制数学公式、图片、列表符号和复选框；
-- 本地图片可由 `NSCache` 逐出并从磁盘重读；已成功下载的远程图片则在应用
-  进程内强引用缓存，因为 `NSCache` 可自行逐出条目，不能保证后续重组不会
-  重新发起网络请求；
-- 可加载的图片 overlay 标记为可缩放角色；鼠标悬停边框与右下角把手由
-  `EditorTextView` 的透明、事件穿透子视图绘制，保证位于 TextKit fragment overlay
-  之上。拖动开始时该视图同时接管图片预览，原 fragment 图片只退出绘制一次；之后
-  每个鼠标事件只更新前景视图 frame，避免 TextKit 合并缩小时完全落在旧绘制表面内的
-  刷新。图片通常向上伸出其一行高的 Markdown
-  anchor fragment；悬停命中不得只相信 `textLayoutFragment(for:)` 的点查询，而要在
-  已布局的 viewport fragments 中检查图片 overlay 的真实矩形。拖动期间不改变
-  `.fragmentOverlay` 的 bounds、不触发 TextKit 逐帧重排，也不连续改写文本。
-  松手后通过标准可撤销编辑把
-  宽度写成 Obsidian 兼容的 `![说明|480](路径)`；解析、编辑预览与阅读 HTML 共用
-  该宽度，高度未声明时保持原图比例。普通 `![说明](路径)` 仍保持标准 Markdown；
-- 行内公式 overlay 的 ascent 写入 `minimumLineHeight`，descent 写入段后间距；
-  不得把整张公式图片高度都塞进 `minimumLineHeight`，否则基线会被压到行框底部，
-  积分号或分式的下沉部分会与下一段重叠。列表项中的独占 `$$…$$` 保留列表段落
-  缩进，只在标记所在行预留块公式高度；`$$…$$` 与正文同处一行时仍按行内流布局。
-- `.tableRowPresentation` 在非激活表格中按共享列网格独立绘制每个单元格，使所有列都能在自己的矩形内换行。
-- 短表格至少占正文列约三分之二，长表格最多占满正文列；编辑与阅读模式都使用无外框、无竖线的开放式表格，只在表头下方和相邻数据行之间绘制横向分隔线。单元格多行文本继承用户设置的正文行高。
-- 表格列宽与图片缩放宽度都在样式化时写入展示属性；窗口 resize 改变内容列宽后，
-  `updateContentInset()` 必须重新样式化这些宽度敏感块。只修改
-  `textContainerInset` 会让 TextKit 2 的表格行停留在不同布局世代，表现为某一行
-  的整套边框与单元格一起横向错位。
-- 编辑器正文使用 AppKit 的原生行距与原生插入点。不要为压缩光标高度重新引入独立的
-  `NSTextInsertionIndicator` 或手算 caret 坐标：TextKit 2 的 fragment 可能仍在异步布局，
-  独立绘制会让屏幕上的光标与真实 `selectedRange()` 脱离。段落之间的呼吸感继续由
-  `paragraphSpacingBefore` 和具体装饰块负责，而不是用户可调的正文 `lineSpacing`。
-- 文档以换行符结尾时，TextKit 2 会把最终空行吸收到前一个片段；若前一个片段是
-  表格末行，其绘制原点会丢失正常首行缩进。`DecoratedTextLayoutFragment` 只对
-  这个末行场景补偿单元格内边距，避免文字、竖线和底线整体左移。
-- 文档末尾的源换行必须保留以满足存储与文件往返契约，但当 EOF 空段落不是当前
-  编辑段落时，编辑器将该终止空行的展示属性折叠为零高度；光标进入 EOF 段落后再
-  恢复正常行框，保证末尾输入仍可编辑。
-- 文档不以换行符结尾时，TextKit 2 可能为合法的 EOF 文本位置返回 `nil` fragment；
-  编辑器应继续让 AppKit 管理 EOF 插入点，不增加旁路的 fragment 坐标推导。
+`WorkspaceWindowLayout` 把窗口可用宽度分成文件侧栏、大纲和中央 Surface 三部分。窗口通过 `.windowResizability(.contentMinSize)` 与根视图共同声明 `760×540` 最小内容尺寸；默认尺寸仍为 `1100×760`。
 
-这些展示属性均不改变原始 Markdown 字符串。
+文件侧栏有两种不同的宽度：
 
-## 6. 阅读模式与导出
+- **偏好宽度**：`@AppStorage` 持久化的用户选择，按 `180...420` 清理非法或历史值；
+- **实际宽度**：每次布局由当前窗口宽度计算，等于偏好宽度与当前预算上限中的较小值。
 
-阅读模式使用独立的 `WKWebView`，由 `DocumentHTML` 与 `HTMLRenderer` 将同一份 Markdown 解析结果转换为带主题的 HTML。PDF 导出与打印复用同一条 HTML 渲染路径。
+自适应只读取偏好，不写回。普通 Surface 预留 440pt；Markdown 大纲打开时先扣除固定 250pt 大纲，再为中央编辑/预览预留 330pt，因此 `760pt` 下文件侧栏收缩到 180pt。窗口恢复后，同一偏好会重新得到更宽的实际宽度。只有用户拖动结束或双击复位才写 `workspaceSidebarWidth`。
 
-阅读环境默认禁用 JavaScript，并对原始 HTML、外部链接和远程图片执行限制。数学公式、图标和允许的本地资源会转换为内联资源。只有忽略空白后独占段落的
-`$$…$$` 才输出块公式；正文中的 `$$…$$` 使用 display 模式渲染但保持行内流，
-代码 span 或 fenced code 中的美元符号始终按字面量保留。
+`WorkspaceContentView` 给中央 Surface 明确的预算宽度并裁切越界内容。内嵌 `DrawingWindowView` 的最小宽高为零；980×540 的固有下限只属于历史独立绘图窗口，不能向统一工作区父级传播。CodeMirror、Markdown 预览和 Quick Look 同样服从父级 frame，内容自己的代码块、表格或图片滚动只发生在 Surface 内部。
 
-阅读模式的代码语言标签与原生复制入口组成代码块右上控件组；标签保持信息语义，
-长名称在窄宽度下截断，复制按钮在悬停或键盘聚焦时显示且不会覆盖代码。按钮只注入交互式
-`ReadModeWebView`，不会进入共用 HTML 路径上的 PDF、打印或 Quick Look 输出；点击
-通过 `x-floralmd-copy:` 私有导航 scheme 传递 UTF-8 代码并由导航代理取消页面跳转、
-写入原生剪贴板。页面脚本仍由 `allowsContentJavaScript = false` 与 CSP 禁用；复制后
-的可见及无障碍反馈只使用宿主注入的静态 JavaScript，并从已转义的宿主标签属性读取
-本地化文案，不把 Markdown 内容拼入脚本。
+`WorkspaceSidebarScrollPolicy` 禁用文件列表 `NSScrollView` 的横向滚动条与弹性，并把已有横向 content offset 归零。它的 AppKit bridge 作为 `List` 的零尺寸 background 宿主，从最近的兄弟视图层级定位列表滚动视图，不能放进 `List` builder：macOS `List` 会把 builder 中视觉高度为零的 bridge 仍解释成一行并保留系统行高，从而把首个资源整体下推。真实宿主测试同时约束“AppKit 行数等于可见资源数”和行外 bridge 仍能应用滚动策略。侧栏标题自身采用可压缩的中间截断，避免标题、菜单与刷新按钮的固有宽度把整行从左侧推出可见区。
 
-Finder Quick Look 继续返回自包含的数据型 HTML，并在每次打开预览时从扩展进程的
-`effectiveAppearance` 解析浅色或深色调色板。Quick Look 的数据型 HTML 宿主不会
-可靠响应 `prefers-color-scheme`，且 reply 生成后不可变；因此系统外观切换后需要
-关闭并重新打开预览才会重新取值，不为实时切换引入带额外网络权限的 `WKWebView`。
+侧栏分隔线的完整 14pt 命中区由单一 `WorkspaceSidebarResizeHandleView` 拥有：同一个 AppKit `NSView` 既是窗口真实 hit view，又通过 `resetCursorRects()` 注册 `resizeLeftRight`，并处理 tracking area、拖动、双击复位、tooltip 与 accessibility splitter 语义。SwiftUI 只绘制不参与命中的视觉线条，并根据 AppKit 回调切换 hover/drag 强度；因此不存在透明 `Color`、SwiftUI gesture 与 cursor rect 视图之间的双层命中竞争。视图在加入窗口、布局变化以及窗口失焦/重新成为 key 时使 cursor rect 失效重建，且从不调用 `NSCursor.set/push/pop`。
 
-编辑与阅读模式按源码行保持视口：`HTMLRenderer` 给每个顶层块添加
-`floralmd-l<起始行>` 锚点，`ReadModeAnchors` 暴露同一组行范围；WebView 通过只
-插入数字的宿主静态 JavaScript 读取或设置“锚点行 + 块内比例”。这不放开页面脚本，
-`allowsContentJavaScript = false` 与 CSP 继续约束文档内容。编辑侧只使用 TextKit 2
-把 UTF-16 源码位置与行号互换。两个方向都先在隐藏表面完成定位，再一次性交换视图：
-Edit→Read 等 HTML 和滚动恢复完成，Read→Edit 等异步位置读取及 TextKit 2 滚动
-完成，因此不会先显示旧位置再跳动。进入 Read 的锚点必须在 `viewMode` setter
-重组离屏块之前取得；远距离返回 Edit 时还必须先同步样式化并布局目标以上的块，
-否则离屏高度估算在后台变成真实高度后会继续推动视口。
+工具栏保持原生 `.navigation` 与 `.primaryAction` placement，不建立覆盖中央内容的自定义浮层。当前必要操作在 760pt 最小宽度内可见；更窄尺寸由窗口约束阻止。
 
-YAML front matter 与多块 `%%` 注释在 Read 解析前隐藏；预处理会为每个被隐藏的块
-保留一个空结构行，并维护“渲染行 → 原始源码行”映射，避免相邻正文被 CommonMark
-合并，也避免 `floralmd-l<原始行>` 锚点漂移。`#tag` 在两个后端显示为强调标签，
-尾部 `^block-id` 作为导航元数据在 Read 中隐藏。非图片 `![[target]]` 由共享的
-`AttachmentKind` 区分 PDF、音频、视频、Markdown/笔记与未知附件；Edit 继续把
-原始 Markdown 内容字符显示为可编辑、可选中的 source-backed 标签，只添加分类颜色、
-语义属性与中英文说明，Read 输出同类颜色、可见分类前缀和 `aria-label`。两者都明确
-标注暂不支持预览，不创建附件、图片 overlay 或文件所有权，也不在此层嵌入外部内容。
+CodeMirror 与 Excalidraw 继续拥有各自的编辑命令。两种 WebView 共用一层很窄的 `performKeyEquivalent` 路由，只把 `Control+Command+F`、`Command+H`、`Option+Command+H` 转回窗口或应用，防止网页快捷键抢走系统全屏和隐藏；其他键仍交给 WebKit。Markdown 页面另外实现 `Command+F` 查找条：匹配计数按 Markdown 源文本计算，高亮则扫描 CodeMirror 当前真实显示且非隐藏的文本节点，再以反向 DOM→source 映射确定当前目标；页面依据完整 DOM Range 的 `getClientRects()` 绘制一层不接收事件的显式矩形覆盖层，全部可见命中为淡色、当前目标为深色，且不改变 CodeMirror selection。每次输入、跳转、滚动、尺寸变化或虚拟化刷新都会先整体替换覆盖层，避免 WebKit 保留上一轮短查询的绘制结果；Escape 同时清空并关闭查找条。
 
-页内 `[[#heading]]` 与 `[[#^block-id]]` 共用 wikilink 路由。Edit 使用当前
-`Block` / `SyntaxHighlighter` 结果求原始 UTF-16 位置，再走 TextKit 2 的既有
-selection 与滚动入口；Read 先求同一目标的原始源码行，再滚动自身 WebView 的
-`floralmd-l<原始行>` 锚点，不能只移动被隐藏的编辑器。跨文件目标仍由直接文件
-解析路径打开，并在新文档中应用相同 anchor 规则。阅读 HTML 的链接必须显式声明
-`cursor: pointer`；WKWebView 不保证为 `x-floralmd-wiki:` 等私有 scheme 自动使用
-手型光标。回归测试需实际加载 WKWebView、激活链接并观察 delegate 回调与 DOM
-滚动，不能只分别断言 href、selector 或目标源码行。
+Markdown 正文的每个视觉行和普通空源行共享当前 `font-size × line-height` 的基础高度，软换行只增加相同高度的视觉行。CodeMirror bundle 标记的块分隔空行仍承载列表、引用、代码、表格和分隔线的语义留白，但宿主以当前排版 CSS 变量覆盖其创建时的固定像素令牌；普通段落把额外留白归零，语义块分别按预览节奏使用相对字号间距，因此字号或行高变化无需重建编辑器，也不会破坏 selection 与 Undo。
 
-Edit 模式的链接保留文本编辑语义：普通悬停与点击继续使用 I-beam 并放置光标，
-只有按住 Command 时才切换为手型并允许跳转。链接悬停稳定 450 ms 后显示不接收
-鼠标事件的轻量 AppKit 提示；点击会立即隐藏提示，同一跨行链接内移动只重定位而不
-反复闪烁。同一文案也作为编辑器的 accessibility help。跟踪区只维护当前 hover
-命中；`flagsChanged(with:)` 在鼠标不动时同步 Command 按下/松开的 cursor rect 与
-当前光标，滚动后则按窗口当前鼠标位置重新命中。这里不得使用全局
-`NSCursor.push/pop`，否则 modifier、tracking-area 与 cursor-rect 生命周期交错时
-容易留下不平衡的光标栈。
+Markdown 打字机模式是默认关闭的 `UserDefaults` 偏好，由设置、编辑菜单和命令面板写入同一个键；命令不占用快捷键。宿主只把状态传给 CodeMirror 页面，跟随决策留在拥有真实布局几何的 Web 侧：用 `coordsAtPos(selection.head)` 获取软换行和实时预览后的 caret 矩形，以编辑区高度 47% 为目标；页面保持标准留白，开启打字机不改变任何布局——因此文档顶部打字时原生 keep-visible 的触发节奏与关闭时完全一致（代价是首/末视觉行的对齐会被滚动边界 clamp，够不到舒适线）。语义是"仅结构编辑拦截"：打字机对普通字符输入、软换行与中文 composition 零干预——不写 scrollTop（所有 typewriter 滚动写入统一经过 `setTypewriterScrollTop`，测试据此断言打字期间写入数为零），原生 keep-visible 滚动照常发生，任何缩放比例下打字行为都与关闭时逐帧一致；字符输入还会取消在途的阻尼动画。回车（新行）、退格与删除（合并行或收缩选区）做同帧对齐：页面滚动、光标视觉行回到 47% 舒适位（"光标不动只移动页面"），这也是打字机对滚动仅有的介入；方向键/PageUp/PageDown/Home/End 仍以可中断、无过冲、260ms 截止的近临界阻尼动画把当前视觉行带回舒适位。缩放、窗口 resize、内容宽度与中文输入法提交等布局变化从不滚动——光标停在布局留下的视口位置，与关闭打字机完全一致（此前由 ResizeObserver 与 `floralmd-layout-change` 驱动的"布局自动跟随"已整体删除：`typewriterFollowingActive` 一旦被任何按键置真就长期保持，打字停止后或输入法提交后迟到的内容/布局事件会让页面自己滚回舒适线，表现为"开了打字机后过一会页面自己滚动"）。pointer down、wheel 会暂停跟随，下一次回车或方向键恢复。切换开关不改 Markdown、selection 或撤销历史。
 
-## 7. 主要代码入口
+对应 AUX-02。
 
-| 范围 | 位置 |
-| --- | --- |
-| 编辑器核心 | `Sources/FloralMDCore/TextView/EditorTextView.swift` 及其扩展 |
-| Markdown 解析 | `Sources/FloralMDCore/Parsing/` |
-| 行内与块级渲染 | `Sources/FloralMDCore/Rendering/` |
-| 编辑行为 | `Sources/FloralMDCore/Editing/` |
-| 阅读与导出 | `Sources/FloralMDCore/Export/` |
-| 应用、文档与窗口 | `Sources/floralmd/App/` |
-| 设置 | `Sources/floralmd/Settings/` |
-| 侧栏与缩略图 | `Sources/floralmd/Views/` |
-| Quick Look | `Sources/FloralMDQuickLook/` |
-| 测试 | `Tests/FloralMDTests/` |
-| 构建与发布脚本 | `scripts/` |
+## 3. 打开规则与权限
 
-## 8. 应用界面结构
+1. 无目标：以配置的 Draft 根创建 `.draft` 会话。
+2. 目标在 Draft 根内：保持 Draft 为根并选中目标。
+3. 目标在 Draft 外：以目标父目录创建 `.externalFolder` 会话。
+4. 不支持扩展名：在进入会话前报错。
+5. 用户明确选择文件夹：以该整个文件夹创建 `.explicitFolder` 会话；之后选择嵌套资源不会缩小会话根。
 
-- 文档大纲读取当前文档标题结构；
-- 文件侧栏从当前文件向上寻找最近的 Git 仓库，否则回退到当前目录；
-- 文件树单击文件行仍负责打开文档；仅双击文件名文本进入原位重命名，编辑的
-  是主文件名并保留原扩展名。Return 提交，Escape 或失焦取消。文件夹不进入
-  此流程。标题栏与侧栏共用 `DocumentFileRenameRequest` 的验证规则：不允许空名、
-  路径分隔符、`.`、`..`、扩展名变化或覆盖同目录文件；仅大小写变化通过同目录
-  隐藏临时名完成并在失败时回滚。
-- 已打开文件的重命名必须通过对应 `NSDocument` 的协调移动路径完成，不能在磁盘
-  移动后另行拼接运行态。目标名先以不覆盖方式预留，成功后由同一文档更新
-  `fileURL`、标签标题、autosave 目标与文件监控，再统一刷新 Git baseline、侧栏
-  选中状态和最近文档；未打开文件使用 `NSFileCoordinator` 执行相同验证后的移动。
-- 文件树右键菜单保持文档导航范围：Markdown 文件提供打开、重命名、在 Finder 中
-  显示、复制路径和移到废纸篓，文件夹只提供 Finder 显示与复制路径，不承担递归删除
-  或新建目录。删除必须使用 `NSWorkspace.recycle` 的可恢复废纸篓语义；已打开文件先
-  经过 `NSDocument.canClose` 的未保存审查，回收期间暂停路径监控，只有系统回收成功
-  才关闭标签并刷新全部侧栏与 Git 状态，失败时保留标签和内存正文。
-- Git 面板读取工作区状态，并为符合条件的当前 Markdown 文件提供一次性本地提交：
-  `Document` 先通过标准 `NSDocument.save` 路径提交输入法文本、写盘并核对磁盘内容，
-  再由异步 `GitCurrentFileCommitService` 重新检查分支、进行中的 Git 操作和目标文件状态，
-  最终只执行 `git commit --only -- <path>`。未跟踪文件只对目标路径临时执行
-  `git add -N -- <path>`，失败时也只清理该路径，因此其他文件原有的 staged/unstaged
-  状态不进入快照或重写流程。该入口尊重仓库 hooks，不使用 `--no-verify`，只创建本地
-  commit，永不 push；冲突、删除、忽略、无变化、detached HEAD 与
-  merge/rebase/cherry-pick 等不安全状态都会停止；
-- Git 面板的 `History` 保持只读：它在后台调用
-  `/usr/bin/git`，按拓扑顺序读取 `HEAD` 与本地分支可达的最近 80 个提交。
-  `GitHistorySnapshot` 保存提交、引用和 HEAD 元数据，`GitGraphLayout` 在 Swift
-  模型层分配分支与合并 lane，跨 lane 连接由 `GitGraphGeometry` 生成保持两端纵向
-  切线的三次贝塞尔曲线；AppKit 行视图只负责绘制和选择。当前提交在未选中时也显示
-  独立 `HEAD` 标签，分支名与提交信息按可用宽度截断。提交弹窗仅显示作者、时间、
-  完整哈希、父提交和本地分支，并可复制哈希，不执行 diff、checkout、提交或推送；
-- 文件/Git 侧栏默认宽度为 248pt，可从右侧分隔边缘拖动到 220–420pt，并同时受窗口
-  宽度 45% 上限约束。`DocumentSidebarSessionState` 保存当前标签会话的展开宽度、主模式
-  与 Git 子模式，因此折叠、模式切换、窗口 resize 和原生标签切换不会重置用户布局；
-- 图片仍是普通 Markdown 引用与磁盘文件，不进入编辑器存储。格式菜单可选择现有
-  图片并按设置写入绝对或相对路径；粘贴图片只拦截可转为 PNG 的剪贴板内容，弹出
-  带可编辑时间前缀的命名框，将文件保存到当前 Markdown 同目录下配置的相对文件夹
-  （默认 `assets/`），再通过标准编辑管线插入引用。普通文本粘贴继续交给
-  `NSTextView`，撤销只撤销 Markdown 编辑，不删除已经保存的图片文件。图片悬停时
-  可从右下角等比例拖动，松手后只更新同一条引用中的 Obsidian 兼容宽度后缀，不把
-  图片或尺寸放进旁路数据库；
-- Git 仓库根目录探测在主线程同步执行，因此必须基于稳定的文件系统路径做有界
-  向上遍历；不能依赖 bookmark 或 Save As 产生的 `URL` 在卷根处自行稳定。
-- 语义缩略图展示标题、列表、代码、Git 改动、光标和视口位置。其纵轴统一使用
-  源码 UTF-16 位置与按当前正文列宽估算的语义换行行：短文档保持自然行距并只占
-  顶部所需高度，语义行总高度超过可用区域后才整体压缩。Git 标记、光标和
-  TextKit 2 `viewportRange` 都转换到同一坐标；点击或拖动再反向得到源码位置，
-  只布局目标片段并有限次收敛正文落点，不按 `document.bounds.height` 比例滚动，
-  也不枚举或信任全部离屏 fragment 的估算 y 坐标；
-- 原生 `NSDocument` 窗口标签负责多文档切换；
-- `⌘N` 通过隐藏创建未命名文档、显式加入当前普通文档标签组后再显示，不能依赖
-  macOS 的“打开文稿时首选标签页”设置；没有普通文档窗口时才创建首个独立窗口。
-  这条 `display: false` 路径不会调用 `showWindows()`，因此加载 pending content 后
-  必须显式刷新未命名空白欢迎层，不能保留视图初始化时的隐藏状态；
-  `⌘⇧N` 明确新建独立窗口：首次显示期间临时禁用自动并组，显示完成后立即恢复普通
-  标签能力。快速记录继续永久禁止自动并入普通文档标签组；
-- `⌘O` 默认把新文件加入触发命令时所在文档的原生标签组，文件目录或 Git 仓库不参与
-  窗口分组；若当时没有可用文档窗口则创建独立窗口。文件菜单另提供无默认快捷键的
-  “在新窗口中打开…”；已打开文件只激活其现有窗口或标签，不跨标签组搬移。Finder、
-  命令行与启动文件请求继续遵循标准 `NSDocument` 打开流程；
-- 普通本地文件成功打开后由 `RecentDocumentHistory` 写回
-  `NSDocumentController` 的系统最近文档列表；`DocumentController` 明确声明与生产
-  shared file list 一致的五项上限，避免不声明文档类型的隔离 Debug 身份得到默认零值。
-  适配层只在 AppKit 尚未反映异步写入时保留进程内的待提交快照，系统列表一旦追平即
-  回到直接读取系统值。菜单展开时按该系统列表上限实时去重，并
-  移除已删除、移动或不可读的 URL。最近项与 `⌘O` 共用当前标签组语义，“清除菜单”
-  直接清空同一系统列表。聚焦文本视图会先消费 `Control-R`，因此应用级本地按键
-  monitor 只拦截这个精确 chord，并打开居中的最近文件选择器；选择器显示文件名与
-  父目录路径，且与命令面板中的“最近打开”命令共用同一入口。文件菜单仍保留原生
-  最近项目子菜单；
-- 原生标签栏出现或消失时，AppKit 可能只改变 `contentView` 高度而不发送
-  `NSWindow.didResize`。正文表面中以 frame 定位的顶部悬浮控件必须使用顶部锚定的
-  autoresizing 或约束；否则新文件并入标签组后会保留旧 Y 坐标并被标签栏裁切。
-- 应用仍在运行但没有可见文档窗口时，Dock 再激活完全交给 AppKit 的标准
-  document-based reopen 流程创建至多一个未命名文档；
-  `applicationShouldHandleReopen` 不得在返回 `true` 的同时手动调用
-  `newDocument`，否则一次用户意图会有两个创建所有者。启动时打开已有文件、
-  Finder 打开文件和窗口恢复也必须先于默认未命名创建，不能附带空白窗口。命令行
-  文件请求只识别位置参数；`-ApplePersistenceIgnoreState YES`、诊断参数和其他
-  UserDefaults 键值对不属于文件路径，不能误抑制默认未命名窗口；
-- 欢迎提示是语义为空的未保存未命名文档上的轻量窗口层，不是 Markdown 内容或独立
-  首页。冷启动、`Cmd-N` 与快速记录共用同一动态状态：`fileURL == nil`、没有 marked
-  text，且 `UntitledDocumentContentPolicy` 判定正文为空时显示；输入或 IME 组合一开始
-  立即隐藏，删除回语义空白或取消组合后重新显示；一旦取得 `fileURL`，即使正文为空也
-  永不显示。它复用 `DocumentController` 的系统最近文件来源与当前标签组打开语义；
-  实际输入提示贴近编辑器插入点，居中的 `FloralMD` 水印与文件导航不伪装成输入框。
-  为保持编辑器第一响应者，透明欢迎视图位于编辑器前方但只让最近文件与“打开文件”
-  控件参与命中，其他区域返回 `nil` 透传。欢迎层及其控件不注册 cursor rect，编辑器
-  因而在整个表面独占连续的 I-beam；可点击性由整行即时增强背景、文字和图标来表达，
-  避免前后视图争夺 cursor rect 而闪烁。`EditorTextView.textInputDidBegin` 只负责
-  展示层的提前隐藏，
-  AppKit 仍原样处理首个按键与 marked text；组合结束后的状态刷新只读取
-  `rawSource` / `hasMarkedText()`，不触碰 storage；
-- 每个新建、重新打开或由系统恢复创建的文档窗口，其窗口会话初始都收起左右
-  侧栏；这不是 `UserDefaults` 设置，也不在后续刷新中重复应用，用户展开后会在
-  该窗口会话内保持展开。快速记录继续复用同一初始状态并保留其紧凑窗口策略。
-- 文件侧栏是窗口最左侧的窗口级主栏，其开关与置顶开关固定放在红绿灯右侧的
-  leading `NSTitlebarAccessoryViewController` 中。大纲是紧邻正文的文档级次级
-  面板：收起时入口固定悬浮在编辑表面左上角的空白边距中，不随正文滚动；展开时
-  面板推动编辑区域并在自身标题区提供收起按钮，不覆盖正文。文件侧栏展开时，大纲
-  与编辑区域整体右移，文件侧栏收起后两者回到窗口左缘。两栏收起时都在内容布局中
-  占用 `0` 宽度，不会留下全高 rail，也不会覆盖正文、滚动条或 minimap。
-- 文档窗口使用透明 unified 标题栏，并在内容表面顶端绘制一条可控的细分隔线，让
-  标题栏与编辑表面保持连续但仍可辨认；窗口底色必须随有效外观变化重新解析，否则
-  启动阶段先创建的窗口会在深色模式下保留浅色标题栏。两侧栏使用稳定的冷中性
-  实色层级，避免展开动画逐帧重算全高毛玻璃；置顶半透明仍由下述统一背景策略控制。
-- 编辑模式、源码模式与阅读模式共享同一份文档状态。
+Draft 根由 `QuickCaptureService` 的安全书签持有。外部工作区通过 `FolderAccessService` 按“目标父目录的完整标准化路径”恢复安全书签；没有书签时，打开路由或侧栏明确请求用户选择同一文件夹。授权选择必须与请求根完全一致，防止悄悄扩大访问范围。
 
-## 9. 设置与本地数据
+显式工作区复用同一 `FolderAccessService` 书签表，但由用户在只允许单个目录的 `NSOpenPanel` 中直接选择根。重开窗口只恢复该精确根；书签无效、目录移动/删除或不可读时显示错误，不回落 Draft。
 
-所有置顶窗口使用固定 88% 不透明度的背景。编辑器、阅读模式和侧栏只停止绘制各自的不透明底色，窗口本身不降低 `alphaValue`，因此文字、光标、控件、图片、数学公式和 TextKit 2 overlay 保持完全不透明。取消置顶或进入全屏会恢复不透明背景；系统启用“减少透明度”或“增强对比度”时也强制使用不透明背景，并监听辅助显示选项变化即时更新。
+Finder 关联在 Info.plist 中声明 Markdown、Excalidraw 与支持的图片类型。App delegate 把 URL 转给统一路由，不再交给文档窗口控制器。
 
-用户设置保存在 `UserDefaults`。设置窗口按通用、编辑器、Markdown、快捷键、外观和高级分类；其中打字机滚动、源码显示、缩略图和 Markdown 扩展开关由 `AppSettings` 持久化，并通过 `EditorPreferenceCoordinator` 在设置、视图菜单、快捷键和所有已打开文档之间同步。每个扩展键默认开启并独立保留，汇总后的同一个 `MarkdownFeatures` 同时注入 Edit 与 Read；已关闭语法的格式菜单命令也必须禁用且不能旁路插入。图片路径写法默认使用绝对路径，也可改为相对于当前 Markdown 文件；剪贴板图片目录始终限制为 Markdown 同目录下的相对路径，默认 `assets/`。这两个图片设置只在下一次插入时读取，不改写已有文档。
+对应 OPEN-01、OPEN-02、OPEN-03、COMPAT-01。
 
-设置窗口使用 AppKit `NSSplitViewController` 保持固定左侧分类导航，右侧为缓存的
-`NSHostingController`；六个 SwiftUI pane 继续拥有各自的 `@AppStorage`、sheet、
-字体面板和即时副作用，只把内容组织为可滚动的卡片分组。切换分类不会重建 pane，
-窗口缩放也不再由各 pane 的固有高度驱动。
+## 4. 持久化边界
 
-快捷键由 `ShortcutCatalog` 以稳定命令 ID 统一登记默认值、作用域和是否允许
-自定义。`ShortcutManager` 从 `settings.shortcuts.overrides` 解析覆盖并实时重建
-菜单；macOS 标准的新建、打开、保存、编辑和窗口命令只集中展示，不允许修改，
-FloralMD 自有的格式、视图、置顶、手动检查更新和快速记录命令可以录制、清除或恢复
-默认。设置页默认隐藏固定的 macOS 标准命令，可按需显示，并可按中英文名称、命令
-ID、分类和当前快捷键搜索。普通菜单快捷键保存字符语义，系统级快速记录保存物理
-key code；输入源变化时会重新计算后者的显示字符和应用内冲突。旧版
-`settings.general.quickCaptureKeyCode` / `Modifiers` / `KeyLabel` 在
-`settings.shortcuts.schemaVersion` 首次升级时迁入统一覆盖表。
-快捷键页在输入源或覆盖变化时只递增展示刷新版本，保持整页及其搜索框、录制按钮的
-SwiftUI 身份稳定；不能用 `.id(...)` 重建整个页面，否则 macOS 为文本框切换输入源
-时会同步销毁 first responder，并中断搜索或正在进行的快捷键录制。
+### Markdown
 
-`⌘⇧P` 打开的命令面板从同一命令目录读取名称、分类和当前快捷键，并通过
-`CommandDispatcher` 将稳定 ID 映射到 AppKit responder chain；没有当前文档时，
-文档级命令会置灰。第一版只暴露安全、可发现的文件、视图、窗口和格式命令，不包含
-退出、隐藏、剪贴板和撤销等高频或容易误触的原生编辑动作。
+`WorkspaceController` 是统一窗口中的 Markdown 持久化所有者：
 
-快速记录是现有未命名文档流程的全局入口，而不是第二套便签存储：用户录制一个全局快捷键后，`GlobalHotKeyController` 通过系统离散热键 API 唤起 FloralMD，不需要监听全部键盘事件或申请辅助功能权限。热键使用独占注册做系统冲突的尽力检测，候选值先注册成功才替换旧值，因此冲突不会让已有快捷键失效；macOS 没有公开 API 枚举全部系统和其他应用快捷键，检测不能视为完备。每次触发会复用仍为空白的快速记录窗口，否则创建新的 `NSDocument`；快捷窗口在显示前即采用与普通文档硬下限一致的 550×400 窗口尺寸、禁止自动并入普通文档标签组并收起左右侧栏，不读取或覆盖普通文档的窗口尺寸偏好。普通文档也可执行“缩至最小窗口”，但该一次性动作不会覆盖下次新建普通窗口所用的已保存尺寸。快速记录默认使用“仅当前 Space”置顶；若用户已将可复用窗口切为“所有 Space”，再次唤起时保留该模式，而已取消置顶的窗口会恢复为“仅当前 Space”。窗口继续使用下述未命名首次落盘流程。启用快速记录会同时启用未命名自动落盘，关闭后者也会关闭快速记录。快速记录启用期间，关闭最后一个窗口只让应用保持待命，`⌘Q` 才退出。
+- 只读入/写出 UTF-8 源文本；
+- 2 秒防抖自动保存，显式保存与退出保存共用同一写入路径；
+- 菜单 `Command+S` 通过聚焦的统一保存动作路由：Markdown 调用 `WorkspaceController.save()`，Drawing 增加当前内嵌画布的保存请求，Image 为不可用；
+- 切换资源前先保存脏 Markdown，失败则不继续切换；
+- `WorkspaceFileStore` 使用原子写入；新建使用 `withoutOverwriting` 和递增候选名。
 
-置顶是窗口会话状态，不写入 Markdown、`UserDefaults` 或窗口恢复数据。每个原生标签组共享“不置顶”“仅当前 Space”“所有 Space”三态，标题栏左侧用 `pin.slash`、`pin.fill`、`globe` 常驻显示当前模式并提供三态菜单。前两态保留普通文档窗口的 `.primary + .fullScreenPrimary` 角色，仅通过 `.floating` 区分是否压过同一 Space 内的普通窗口。普通 titled `NSDocument` 窗口即使设置 `.canJoinAllSpaces + .fullScreenAuxiliary + .canJoinAllApplications`，也不能稳定进入另一个 App 的原生全屏 Space；“所有 Space”因此由 `AllSpacesPinnedPanelController` 把每个标签文档已有的编辑器内容视图、工具栏和 FloralMD 自建的标题栏 accessory 临时移入对应的 titled `.nonactivatingPanel`，这些面板按原顺序组成辅助标签组，只使用 `.canJoinAllSpaces + .fullScreenAuxiliary` 与 `.floating`。存储、撤销、选区和 IME 状态没有副本，退出该模式后原样移回普通文档窗口。面板登记为对应 `NSDocument` 的 window controller；每个原 `DocumentWindow` 只保留空占位视图，并临时设为 `alphaValue=0`、忽略鼠标，但不 `orderOut`。这个透明度只作用于没有正文的宿主，不会淡化文字或 overlay；保留宿主是必要的，因为 `orderOut` 最后一个文档窗口会触发应用退出，也会让 AppKit 在过渡期拆散原生 tab group。切回普通模式后，控制器保留未登记到 `NSDocument`、没有正文和工具栏的隐藏 Panel 外壳，后续切换直接复用以避开窗口分配；普通标签操作不在交互关键路径销毁这些休眠外壳，文档关闭或下次进入所有 Space 时才丢弃与当前标签成员不匹配的缓存。从文件侧栏打开新文档始终使用 `display: false`，完整消费 `pendingContent` 并加入目标标签组后才显示；“不置顶”和“仅当前 Space”只把模式应用到新窗口自身，不运行组级刷新。所有 Space 模式只为新文档增量创建或复用一个辅助 Panel，普通宿主从入组到 Panel 接管始终保持透明；已有 Panel 和正文视图不会拆卸，辅助标签的接入和激活推迟到下一轮主线程，但不强制同步绘制。模式切换和其余原生标签增删前使用面板创建时冻结的组成员统一恢复普通宿主，不能在 AppKit 过渡期重新查询组；辅助标签组内的标签切换则直接切换各文档自己的面板，模式图标和正文同步更新。FloralMD 自身请求全屏时会先恢复整个普通 `DocumentWindow` 标签组及其 `.primary + .fullScreenPrimary` 角色；退出或进入失败后若模式仍为“所有 Space”，再重建辅助标签组。全屏命令显式接入菜单和固定的 macOS 标准快捷键 `⌃⌘F`，不依赖 AppKit 自动插入菜单项。
+当前活动 Markdown 由 `ActiveMarkdownFileMonitor` 以父目录 `NSFilePresenter` 监控，而不是绑定可能被原子替换淘汰的文件 inode。presenter 回调在专用串行 `OperationQueue` 上接收，再以 trailing 150ms 合并后切回 `MainActor`；控制器 UUID generation 隔离旧 monitor 与延迟重试。每次切换、改名重绑或销毁都会先注销 presenter。监控复用 `WorkspaceSession` 已持有的 Draft/外部目录安全作用域，不自行扩大授权；`NSFileCoordinator` 统一协调读写。
 
-设置页中依赖目录授权的开关不能在 `@AppStorage.onChange` 内同步调用
-`NSOpenPanel.runModal()`：这会在 SwiftUI 控件事务尚未完成时进入新的模态循环，
-面板可能落在设置窗口后方。开关先保留原状态，再在下一轮主循环把面板作为设置窗口
-的 sheet 前置显示；只有 bookmark 保存成功后才一次性提交开关状态，取消则保持原值。
+磁盘快照记录标准化 URL、resource identifier、mtime、大小、SHA-256、文本和保存 generation。FloralMD 保存前登记 exact content + generation，事件到达后以实际磁盘内容识别自身保存；mtime 只作为诊断元数据。另维护 last-disk baseline，并对 BOM、CRLF/LF 和尾换行做 soft equality，避免云盘格式重写反复提示。外部读取失败按 50/150/300ms 有界重试；remove/rename 先按 resource identifier 重新扫描并确认最终存在性，避免原子 replace 的假删除。
 
-文档保存可选择自动或仅手动模式；自动模式默认每 2 秒保存一次，也可选择 1、5、10 或 30 秒，手动模式保留 `⌘S` 与关闭确认。未命名文档的首次自动落盘是另一项默认关闭的设置：用户选择目标文件夹后，`Document` 只从 `.editorDidSynchronizeText` 接收已同步的非空白正文，确认没有 marked text，并按同一保存间隔 debounce；到期后以可读时间戳命名，用 `O_EXCL` 原子占位避免覆盖，再通过标准 `NSDocument` `.saveAsOperation` 获得首个 `fileURL`。目标目录以 security-scoped bookmark 数据持久化并由单一访问边界解析，为未来 App Sandbox 保留迁移路径；失败会保留内存正文并停止，只有再次编辑或设置变化才重试。该目录按平铺的随手记 Inbox 使用：FloralMD 只把新文件直接写入所选目录根部，不创建日期、分类或“已整理”子目录，也不承担处理后的归档；文件仍在目录中即表示尚待用户判断去向。首次落盘成功后的周期保存仍完全由前一项设置决定。自动落盘、Quick Capture 复用、窗口脏状态与关闭审查共享 `UntitledDocumentContentPolicy`：仅当 `fileURL == nil`、没有 marked text 且正文 trim 空格与换行后为空时，文档才是可直接丢弃的空白未命名稿；已有文件即使被清空也始终保留普通文件语义。关闭窗口或 `⌘Q` 开始时先提交仍在进行的 marked text，再同步这一状态；清空会取消尚未触发的首次落盘，Undo 恢复非空正文则重新标脏并重新安排 debounce。
+clean 外改经 CodeMirror 单事务替换；selection 夹取到新文档范围，保留滚动与焦点，并在 composition 结束后执行。dirty 外改进入 conflict，自动保存、资源切换保存与关闭保存均不得覆盖磁盘；载入磁盘会丢弃本地 buffer，保留当前则更新磁盘 baseline、进入 divergent 且继续 dirty，之后只有显式保存可覆盖。重复的同一磁盘状态不会反复提示，磁盘后来与编辑器一致时自动解除 divergent。外部改名同步活动 URL、标题和侧栏通知；真正删除进入既有 missing 状态且不重建文件。
 
-`Document.autosavesInPlace` 只声明文档支持原地自动保存；`AppSettings.applyDocumentSaving()` 还必须把 `NSDocumentController.autosavingDelay` 设为正数才能真正启动周期性保存，值为 `0` 表示禁用。窗口副标题以 `NSDocument` 的脏状态与保存回调为准，显示未保存、正在保存、已保存或保存失败；保存成功后还会核对磁盘正文与当前 `rawSource`，只有完全一致才修复残留脏状态。自动模式关闭有待保存变化的文件时会先完成一次不可取消的原地保存，等 change-token 落定后再次核对磁盘，再进入系统关闭流程。周期自动保存虽然已经更新原文件，AppKit 仍可能保留“未显式保存”的内部关闭基线；因此 `canClose` 只有在再次确认磁盘与当前 `rawSource` 完全一致时才直接完成公开的 `shouldClose` 回调。`⌘Q` 则由 `DocumentController.reviewUnsavedDocuments` 在系统弹窗之前顺序刷新全部已命名文档。AppKit 会在调用该方法前缓存“需要审查”的判断，所以全部保存成功并再次确认没有脏文稿后，控制器直接完成其公开的 `didReviewAll` 回调；若再调用 `super`，系统会沿用旧判断并错误显示 Save/Revert 弹窗。
+外部更新与改名成功属于中央 Surface 内的 2.5 秒紧凑 Toast，不进入窗口 `safeAreaInset`、不覆盖标题栏或横跨 Files 侧栏，也没有关闭按钮。冲突、divergent 和 missing 属于必须处理或知晓的常驻提示，同样只覆盖中央 Surface；冲突按钮与说明保持在同一紧凑面板内。
 
-底层 vnode 文件监控无法识别写入进程，因此 FloralMD 在自身保存期间暂停并取消监控通知，完成后重新绑定路径；`NSFilePresenter` 还可能在保存完成后延迟送达通知，所以文档会保留最近一次自身写入快照，并先与磁盘内容核对来源。若落盘内容不等于该次保存快照，则立即补做外部修改检查。这样持续输入时不会把上一拍自动保存误报为外部冲突，真正不同的外部写入仍保留冲突策略。手动模式、未启用首次落盘的未命名文档和保存失败仍使用标准保存确认。
+本阶段没有 Excalidraw 场景热重载、图片/SVG 自动刷新、整目录事件数据库或多标签批量冲突 UI。参考实现只用于原则校验：采纳 VMark 的 exact-content generation、baseline/divergent 与最终状态模型，以及 VMark/ColaMD 的父目录监听、重绑和 trailing debounce；不采用 ColaMD 的布尔计时器、自称 Agent 或 dirty 无条件覆盖，也不照搬 Tauri/Rust/Node 的 watcher 和批处理架构。
 
-主题与字体仍由 `EditorTheme` 作为独立领域模型管理。正文字体拆分为共用字号的西文基础字体和中文级联字体：两者默认都跟随 macOS，且可分别选择；设置窗口在系统模式下仍显示当前实际字体（SF Pro 与系统解析出的中文字体）。阅读模式用相同顺序生成 CSS 字体栈。旧版默认产生的 `Iowan Old Style` 与 `IowanOldStyle-Roman` 在加载时迁移到系统西文字体，其他用户选择保持不变。应用默认在本地处理文件，不要求账户或云端服务。
+旧 `MarkdownDocument` 与旧视图仍保留用于兼容代码和既有测试，但标准 App 场景不再创建 `DocumentGroup`，避免双重保存所有权。
 
-## 10. 公开快照与更新 feed
+Markdown 的实时编辑 WebView 与只读预览 WebView 都通过 `MarkdownLocalResourceSchemeHandler` 安装 `floralmd-resource`，不再让 WebContent 直接读取 `file://`。每次活动文档变化时，主进程用不可推导的 scope 标识注册当前 `WorkspaceSession.rootURL` 与 Markdown 所在目录；页面只看见 scope 和工作区相对目录，不写入绝对本地路径或日志。Untitled Draft 以 `DraftWorkspaceLayout.notesDirectory` 作为未来文档目录；没有工作区会话的历史单文件入口不开放本地资源通道。
 
-公开 `main` 按产品版本保存可独立测试与构建的源码快照，正式版本 tag 指向对应
-快照提交。维护者的导出、快照准备和远端发布控制工具属于内部开发基础设施，不是
-公开产品源码或构建输入，因此不包含在本仓库的公开快照中。
+资源请求先逐段解码，再拒绝空段、`.`、编码斜杠与 NUL；`..` 只参与从当前 Markdown 目录出发的标准路径解析，不能逃出工作区。解析器逐段拒绝符号链接与目录目标，并在标准化和 `resolvingSymlinksInPath()` 后再次验证仍被授权根包含。最终只返回通过内容签名验证的 PNG/JPG/JPEG/GIF/WebP/SVG 普通文件及精确 MIME，SVG 明确使用 UTF-8；缺失、伪扩展、过期 scope 和越界请求全部失败。只允许内部生成的数字刷新查询参数用于绕过 WebKit 图片缓存，其他查询仍拒绝。
 
-Sparkle 的稳定 feed URL 与 EdDSA 公钥内置在 `Info.plist`；私钥只存在
-维护者钥匙串和 GitHub Actions 的
-`FLORALMD_SPARKLE_ED_PRIVATE_KEY` secret 中。公开仓库的孤儿 `feed`
-分支只保存 `appcast.xml`。最终 `v<CFBundleShortVersionString>` tag 触发
-`.github/workflows/release.yml`，但第一阶段只创建同 tag 的 GitHub Pre-release，
-不检出或修改 `feed`。无秘密的 `test` job 先完成脚本测试、`swift test` 与
-Production 候选装配；只有它通过后，引用受保护 `production` Environment 的
-`release` job 才能读取证书、公证与 Sparkle Secrets。tag 必须精确匹配
-`Info.plist`，且指向已经进入公开 `main` 历史的源码快照。该 Environment 必须在
-GitHub 侧配置 required reviewer，并允许最终 `v*` tag 和从 `main` 人工触发的晋升；
-workflow 文件本身不能替代账号侧保护。
+Markdown 导航不复用图片资源加载决策。CodeMirror 的 `Command`-点击和预览的普通点击都把原始 destination 交给 `MarkdownLinkNavigationResolver`；预览 HTML 以 `data-md-href` 保留尚未被 `<base>` 规范化的原始 `../`。`WorkspaceOpenRouter` 在当前附着的 `WorkspaceController` 内完成授权、逐段符号链接验证和 `open`，因此保存失败不切换、工作区外先授权、成功也不创建第二窗口。fragment 通过统一大纲定位；HTTP/HTTPS/mailto 交给 `NSWorkspace`，图片和绘图回落既有语义。
 
-`release` job 从 tag 对应的同一 commit 重新构建唯一正式 App，使用
-Developer ID Application
-identity 按 Sparkle helpers、framework、Quick Look、主 App 的由内到外顺序签名，
-所有可执行代码都要求 hardened runtime、secure timestamp 且不得包含
-`get-task-allow=true`。它先以 ZIP 提交 App 公证并 staple App，再从已 staple 的 App
-只创建一次 DMG；DMG 自身签名、公证、staple 后才成为最终字节。随后执行严格
-`codesign`、`stapler validate`、`spctl`、DMG 容器校验和 SHA-256 校验，用既有
-EdDSA 私钥对同一 DMG 生成旁路签名，并核对私钥导出的公钥仍等于 App 内置
-`SUPublicEDKey`。最终 DMG 经 GitHub artifact attestation 后作为 Pre-release 资产
-上传，上传后的服务器 SHA-256 必须与本地最终字节一致。workflow 的恢复路径只会
-重新下载并验证已经存在的三项资产，不会用重跑产生的新 DMG 覆盖它们。
+CodeMirror 非空文本选区使用规范化后的半开区间与 syntax tree 构造范围求交：任何被触及的 Markdown 构造都整体显露源码，不是只按 selection head 所在线或只显示部分 delimiter。列表与 task marker 按被选中的逻辑行显露；无序列表的 marker 与其源码分隔空白共同留在和预览 bullet 相同的固定悬挂槽内，嵌套源码缩进继续存在于 DOM、selection 与复制范围但不重复贡献语义深度已经提供的布局宽度，因此建立、反向拖动或折叠选区都不改变正文首字符列或行位置。ATX 标题、强调、链接、行内代码、围栏和表格按完整构造显露，同时取消这些构造的背景、圆角、语义色、粗斜体与交互 widget；独立的 geometry-only decoration 保留标题字号/行高/悬挂换行、列表缩进/间距和行内代码的字体尺寸/透明 padding，避免源码显露时纵向收缩。自定义 selection layer 在每个逻辑行内按视觉行归并相邻 DOM Range 矩形，遮平透明占位造成的小间隙，但不跨空白逻辑行或 block image widget；图片 gallery 及其后代另以 `user-select: none` 和透明 `::selection` 排除 WebKit 原生着色，因此图片预览不进入文字选区。普通正文不会带动未相交构造。选区折叠后重建完整实时预览；IME marked range 不视为用户源码选区，以保持组合输入期间的几何稳定，普通 caret、源码 offset 与复制内容继续沿用既有路径。
 
-用户必须从该 Pre-release 下载真实 DMG 并完成独立安装验收。验收通过后，维护者从
-公开 `main` 人工触发 `.github/workflows/promote-release.yml` 并通过同一个
-`production` Environment 审批。晋升 job 重新下载 DMG、SHA-256 与 Sparkle
-签名旁路文件，核对 GitHub 服务器 digest、artifact attestation、Developer ID、
-staple、Gatekeeper、版本、长度和 EdDSA 元数据；它不重建、不重签也不重新上传
-资产。验证通过后，同一个 GitHub Release 原地从 Pre-release 改为正式版，再把
-同一 DMG 的 URL、长度和签名写入孤儿 `feed`。如果 Release 状态已经改变但 feed
-推送失败，重跑晋升只补齐幂等的 appcast 条目。
+实时编辑的语义 token 同样由 CodeMirror syntax tree 产生 decoration：链接、图片引用、行内代码与 Markdown 标点只增加样式类，不改写 buffer。浅色/深色 CSS 变量分别给图片柔紫和代码暖棕，正文与标题继续使用主文字色；selection 使用系统 `Highlight` 且带更高 specificity，搜索命中继续由独立高层覆盖层绘制，错误 widget 保留自己的失败类。第一版没有设置开关。gutter 不再用宿主正则重复解析 Markdown，而是消费 bundle 从同一 syntax tree 导出的 H1–H6/CODE/IMG 行元数据；只有整行由一个或多个 Image 节点与空白组成时才输出 IMG。
 
-存在 workflow 配置不等于已经发布：Developer ID 签名、Apple `Accepted` 公证、
-staple/Gatekeeper、Pre-release 资产、用户下载手测、原地晋升和稳定 feed 是逐层
-独立证据。`scripts/release.sh` 只做无秘密的本地候选校验，不创建 tag、Release、
-公证产物或 appcast。
+编辑态图片由 CodeMirror `StateField` 持有 block widget decoration。解析只读取 Markdown 语法树中的 `Image` 节点，源码本身不替换、不隐藏；每行图片在对应源码行后形成 gallery。图片路径所在行发生文档变化时重建相关 decoration，其他输入只映射既有 ranges；应用内图片落盘或用户点击工作区刷新时，原生通知经过 120ms debounce 调用 `refreshImages()`，递增本地资源缓存键，不重载页面。加载失败只把 widget 标为 `Image unavailable`，语法、selection、IME 与 CodeMirror undo history 均留在原编辑状态。
 
-`CHANGELOG.md` 是 GitHub Release 与 Sparkle 更新说明的共同来源。CalVer 版本
-保持 `## [YYYY.MM.PATCH] — YYYY-MM-DD` 边界，版本内固定先写完整的
-`### 中文` 区块及其 `#### 新增` / `#### 变更` / `#### 修复` 等类别，再写完整的
-`### English` 区块及对应 Keep a Changelog 类别；不使用 `中文：` / `English:`
-行内标签，也不依赖行内粗体区分语言。`.github/workflows/release.yml` 与
-`scripts/release.sh` 都通过 `scripts/extract-release-notes.py` 生成合法 Markdown，
-`scripts/changelog-to-html.py` 复用同一版本边界并把两级区块标题转换为 Sparkle
-HTML，因此四级类别标题不会结束当前版本，只有下一个 `## […]` 版本标题会结束。
-旧交替格式把缩进的中文行折叠为前一个英文列表项的 continuation；其中
-`**中文：**现在…` 的闭合星号位于标点与汉字之间，不满足 CommonMark 的
-right-flanking 分隔符条件，GitHub 因而原样显示星号。新结构不再依赖这类行内强调。
+实时编辑表格继续由 bundle 解析、序列化并以单次 CodeMirror transaction 修改，Swift 不重复实现 Markdown 表格 parser。表格 widget 是 Markdown 源的确定性投影：未聚焦单元格通过正文同一 `markdownLanguage.parser`、行内公式 scanner/KaTeX renderer 和安全 DOM renderer 显示 strong/emphasis/strikethrough、行内代码、行内公式、链接、图片与反斜杠转义；只用 `textContent` / DOM node 构造，不解释原始 HTML。相对图片沿用当前页面的 `floralmd-resource` base URL，因此仍经过工作区 containment、符号链接、签名与 MIME 校验。单元格 focus 从 table model 恢复原始 Markdown plaintext，未改动 blur 只恢复投影、不发 transaction；内容改变后仍由既有 `serializeTable` 一次 dispatch，因而一次 Undo 可完整恢复。单元格右键不再被表格结构编辑拦截，也不再经过 Web → Swift → AppKit 菜单协议；结构操作集中在表体左侧/表头上方的可视行列把手和分隔线/外缘 `+`。只有 widget 持有显式行或列结构选区时，Delete/Backspace 才删除整行或整列；单元格 caret 保留正文删除语义。内部横/竖分隔线按钮按当前 DOM 几何定位并随横向滚动、尺寸变化重测，分别调用 `insertRowBefore` / `insertColumnBefore`；外缘按钮继续末尾追加。结构按钮为空文本 DOM，视觉符号由 CSS 伪元素绘制，localized `aria-label` 由 Swift 注入，因此不污染 Markdown 或查找。该协议仅安装在 CodeMirror 实时编辑页，只读预览不包含入口。
 
-普通 CI、tag 发布与晋升 workflow 都固定使用 `macos-26` runner，并在日志中记录
-实际 Xcode 与 Swift 版本。`latest-stable` 只在这个明确的 runner 世代内选择；
-普通 CI 的 SwiftPM cache 使用 `spm-v3-macos26` 代际，不能复用旧
-`macos-14` / Xcode 16
-产生的构建缓存。runner 和编译器版本不改变 `Package.swift` 声明的 macOS 14
-最低部署目标。
+已加载 widget 的双击或 `Command`-点击只向宿主提交 `destination/sourceFrom/sourceTo/activation` 的强类型 `openImage` 消息；bridge 拒绝绝对 URL、协议与窗口参数。宿主把相对 destination 重新交给当前 `MarkdownLocalResourceSchemeHandler`，复用其工作区 containment、逐段解码、符号链接、文件签名和 MIME 决策。解析成功后，`FloralMDImageViewerCoordinator` 按标准化文件 URL 去重 `NSWindowController`；失败或尚未加载的 widget 仍只定位源码。普通链接继续走 `openLink`，两条控制流不互相降级。
 
-SwiftMath 的原生 SwiftPM CLI 构建只生成从 `Bundle.main.bundleURL`（应用包根目录）
-查找资源的访问器，而标准 macOS 应用把 `SwiftMath_SwiftMath.bundle` 封装在
-`Contents/Resources`。Production 因此通过 `swift build --build-system xcode`
-构建；Xcode 的 SwiftPM 集成会生成应用感知的候选路径，优先检查
-`Bundle.main.resourceURL`，再回退到 framework 和命令行位置。v2026.7.3 与
-v2026.7.4 曾尝试在构建后修改 SwiftPM 的派生源码，但后续构建重新生成了访问器，
-最终二进制仍只包含 `bundleURL`，导致首次渲染公式时触发 `NSBundle.module` 的
-断言退出。打包门禁会检查最终 Mach-O 确实包含 `resourceURL` 选择器，并确认资源包
-实际位于 `Contents/Resources`；不能只检查派生源码或目录中是否存在 `.bundle`。
+正文 decoration 与表格 inactive renderer 复用同一个 hashtag token scanner，统一字符、路径分段、非纯数字、词内邻接与反斜杠转义边界；code、link、URL、HTML 和 Table 等结构排除仍由各自 syntax seam 负责。表格只在安全普通文本 gap 中构造 `.cm-md-tag` DOM，focus 仍恢复原始 `#tag` 文本。
 
-标准“检查更新…”菜单、`SPUStandardUpdaterController`、feed 和公钥都只属于
-Production；Debug 不导入、链接或嵌入 Sparkle，也不显示该菜单。
-`scripts/build-app.sh` 同时检查两种产物：Production 必须含正确 feed、非空公钥、
-Sparkle framework 和手动菜单；Debug 必须全部不含。自动检查开关使用
-Sparkle 的 `SUAutomaticallyChecksForUpdates` UserDefaults key。拉取 feed 后，Sparkle 先按
-`sparkle:version` 比较单调递增的 `CFBundleVersion`，再用内置公钥校验下载件签名。
+对应 NEW-01、MD-01。
 
-FloralMD 从 `2026.7.0` 起使用 `YYYY.MM.PATCH` 日历版本：同月发布递增 PATCH，
-跨月的首次发布从 PATCH 0 开始，没有发布的月份可以跳过。Git tag、GitHub
-Release 标题和 DMG 名称分别使用 `v2026.7.0`、`FloralMD 2026.7.0` 和
-`FloralMD-2026.7.0.dmg` 的对应形式。`CFBundleVersion` 是另一条独立整数序列，
-在同一条已安装客户端可升级的发布链中必须严格递增；appcast 分别把营销版本写入
-`sparkle:shortVersionString`，把构建号写入 `sparkle:version`。2026-07-15 的一次性
-公开体系重建明确放弃旧 Sparkle 链，并要求用户手动重装，因此新链以
-`2026.7.0 / build 1` 开始；从该基线起不得再次重置，下一版至少为 build 2。
+### Drawing
 
-## 11. 许可与反馈
+`DrawingStorageLayout` 有 Draft 与外部两种 scope：
 
-FloralMD 使用 Apache License 2.0。根目录 `LICENSE` 保持许可证标准文本；项目、
-Edmund 与 Swift Markdown 的署名及来源说明由 `NOTICE` 承担。能够从 Edmund
-对应文件确认继承且内容发生变化的文本文件，必须携带一行
-`Modified from Edmund by Yingkai Sun for FloralMD.`；纯重命名且内容相同的文件与
-首次由 FloralMD 创建的文件不需要该声明。具体来源映射和发布前完整性检查属于内部
-维护资料，不进入公开源码快照或发行包。
+- Draft 新建源文件直接到 `drawings/`；笔记局部或外部源文件保持原目录，不新增 `excalidraw/` 子目录。
+- 每个标准 SVG 固定为源文件父目录的 `exports/<同名>.svg`。因此同一规则覆盖 Draft 根 `drawings/`、笔记局部 `drawings/` 与外部绘图目录。
+- `.excalidraw` 的 `files`/`dataURL` 是图片唯一事实源；Swift 验证 scene 与图片载荷，但不再把图片另写到 `images/`。
+- 旧 `drawings/images/`、`notes/assets/drawing-exports/` 和旧同级 SVG 不自动迁移或删除；新保存停止双写。
 
-`scripts/build-app.sh` 把根 `LICENSE`、`NOTICE`、Lucide 许可及当前 SwiftPM
-解析版本对应的 Swift Markdown、Swift CMark、SwiftMath 许可证复制到 app bundle；
-Production 还复制 Sparkle 许可证。构建后的 sealed bundle 会逐项检查这些资源，
-因此 DMG 不再依赖仓库网页或 Git 历史来提供第三方许可文本。
+`DrawingSVGSyncPolicy` 通过 `UserDefaults` 保存三档设置：`.draftOnly`（默认）、`.allDrawings`、`.never`。发起画布 completion 前，`DrawingWindowView` 把当前 layout 与 `syncSVG` 冻结在 completion intent 中，避免异步返回期间设置变化导致请求与写入计划不一致。
 
-如果遇到问题，欢迎附上 macOS 版本、FloralMD 版本、复现步骤和必要截图，方便定位原因。
+保存链根据冻结计划决定是否请求 SVG：
+
+```text
+Command+S / 完成绘图
+  → 冻结 DrawingStorageLayout + DrawingSVGSyncPolicy
+  → 需要自动 SVG：请求自包含 scene + SVG
+  → 不需要自动 SVG：只请求自包含 scene，payload.svg = nil
+  → DrawingStore 暂存源与可选 SVG
+  → 提交目标；失败时恢复本次涉及的旧文件
+```
+
+`DrawingStore` 在不自动同步时不创建 `exports/`、不检查或改写已有派生物。自动同步要求 SVG 时，SVG 缺失或验证失败会让整个保存失败并保留旧源；源与标准 export 的替换共享一次回滚事务。已有绘图的源 URL 必须符合当前 layout，防止越界写入。
+
+手动导出是独立的 `.exportSVG(destination)` completion intent：先通过 `NSSavePanel` 选择目标并由系统处理覆盖确认，再请求和验证 SVG，最后原子写入选定文件。它不保存 `.excalidraw`、不改变会话 baseline，也不改变自动同步设置。
+
+图片元素原图导出走另一条只读 scene 流：离线宿主通过 Excalidraw 公开 `onPointerDown` 订阅取得 `PointerDownState.hit.element`；仅当右键命中 `image` 且 `getFiles()[fileId]` 存在时，才把强类型载荷交给 `ExcalidrawBridge`。Swift 的 `DrawingOriginalImageRequest` 不信任 Web 载荷，会重新核对 MIME 与 data URL header、解码非空字节并限定为当前 Excalidraw `IMAGE_MIME_TYPES`。宿主在对应画布坐标显示最小原生 `NSMenu`，用户确认菜单后才打开 `NSSavePanel`；`DrawingOriginalImageExporter` 只原子写入选定 URL，不请求 completion、不保存 scene，也不触碰 baseline、dirty 或 `exports/`。
+
+可维护的宿主源码位于 `scripts/excalidraw-bundle/`，固定 Excalidraw、React 与 Vite 版本。`npm test` 验证右键命中协议，`npm run build` 从源码生成并安装 `FloralMD/Vendor/Excalidraw`；安装步骤同时复制 Excalidraw 运行时按 `EXCALIDRAW_ASSET_PATH` 查找的完整字体树。仓库不直接维护手改的压缩 JS。
+
+对应 DRAW-01、DRAW-02、DRAW-03、COMPAT-01。
+
+### Image preview
+
+PNG、JPEG、GIF、WebP 与 SVG 共用 `WorkspaceImagePreview`，由 `WorkspaceImageWebView` 将受控 `WKWebView` 嵌入统一窗口中央 Surface。查看器生成一页仅含 `<img>` 的本地 HTML；所有支持图片都作为图片资源载入，因此 SVG 不以可执行顶层文档运行。
+
+WebContent 子进程不直接读取 `file://`。主进程先把已经由工作区授权范围覆盖的文件注册为一次性 `floralmd-image://resource/<id>`，`WorkspaceImageResourceSchemeHandler` 再按真实类型返回字节与 MIME；未知 ID 和其他协议不会映射到磁盘。内容安全策略默认拒绝资源，只允许该应用内部协议或 data 图片，以及查看器自身的内联样式和脚本；WebKit 使用非持久数据存储。这个边界既避免 WebKit 沙盒导致“无法显示”，也不扩大工作区本来拥有的文件权限。
+
+`WorkspaceZoomingImageWebView` 把普通 macOS `scrollWheel` 的水平/垂直增量交给页面平移；带 `Command` 的纵向滚动与 `magnify` 则转换为指针中心缩放。非精确鼠标滚轮会换算为可感知的平移/缩放步长，触控板精确增量保持系统惯性。本地页面处理 pointer drag 平移、适应窗口、1:1 与双击切换，并在 CSS 和事件层禁止浏览器选区。页面通过单一 message handler 回报 `scale/offsetX/offsetY`，Coordinator 按标准化 URL 保存状态并在切回资源后恢复。缩放限制与按钮步进由 `WorkspaceImageZoom` 集中定义，SwiftUI 工具条只发送受限命令，不接受任意脚本输入。
+
+查看器按扩展名/MIME 已确定的资源类型选择绘制策略，但继续共用同一个 `<img>`、状态模型与手势数学。PNG/JPEG/GIF/WebP 保持固定 intrinsic layout，并用 CSS transform 表达位图缩放。SVG 则在每次倍率变化时增加 `<img>` 的实际 `width`/`height`，促使 WebKit 以新的 SVG viewport 重绘路径、文字与滤镜子树；常规图片在 800% 等倍率不再只放大初始合成层。
+
+SVG 重绘尺寸不再使用固定 4096 CSS px 上限。`WorkspaceVectorRedrawBudget` 以当前机器物理内存的 1/16 建立 192–512 MiB 的单预览峰值预算；页面再同时考虑目标倍率、intrinsic 宽高比、窗口可视尺寸、`devicePixelRatio`、物理像素面积、双缓冲 RGBA 的 8 bytes/px 峰值估算，以及 16384 CSS px 病态尺寸硬边界。预算允许时使用完整布局重绘，超出时只把有界 `paintScale` 交给 WebKit，剩余倍率继续由 transform 合成；极端 intrinsic 尺寸允许布局低于 1 倍后再合成，以免仅显示 1:1 就创建失控表面。倍率或窗口缩小时重新计算并回落布局尺寸，从而释放高分辨率层。该预算只作用于 SVG 分支，不改变普通位图或 SVG 内嵌位图的像素语义。
+
+1:1 以图片首次 `load` 时冻结的 `naturalWidth/naturalHeight` 为准，后续布局变化不反读 WebKit 会随 SVG CSS viewport 改变的 `naturalWidth`。绝对 `width`/`height` 给出 intrinsic viewport；只有 `viewBox` 或百分比尺寸配合 `viewBox` 时使用 `viewBox` 尺寸；百分比且无 `viewBox` 时采用 WebKit 的 300×150 回落。该策略同样覆盖极小和超大画布，不解析、重写或重新导出 SVG。Excalidraw 自包含 SVG 的路径和文字随 viewport 重绘；其中内嵌 PNG/JPEG 仍受自身像素分辨率限制。
+
+外部图片继续依赖 WorkspaceResolver 已取得的工作区根安全作用域，不另行申请单文件权限；查看器只读原文件，不提供保存路径，也不会把预览状态写入工作区。
+
+Markdown 独立图片窗口注入同一个 `WorkspaceImagePreviewController`，因此不复制渲染器、缩放状态或 SVG 重绘算法。`MarkdownImageViewerInitialLayout` 用 `NSImage` 解码得到的固有尺寸、内容留白、实际窗口装饰和来源窗口所在屏幕的 visible frame 计算首次 frame：720×520 为常规下限，宽高分别不超过可见区域 84%，并只在创建时居中；Web 页面继续以不超过 100% 的 fit scale 完整显示并居中。窗口标题和 represented URL 来自已解析文件，按标准化 URL 单例化，重复激活不重算 frame 或预览状态，并额外提供 Finder reveal。每个窗口以 `.floating` 独立默认置顶，工具条按钮只切换该窗口 `.floating/.normal`，关闭重开恢复统一的默认置顶而不建立全局偏好。关闭或 `Command+W` 会拆除 SwiftUI 宿主、WebKit message handler、navigation delegate 与 scheme 注册，再释放该工作区根的安全作用域 lease；侧栏选择图片仍使用中央 Surface，不进入这个窗口协调器。
+
+对应 IMAGE-01。
+
+## 5. Markdown 图片粘贴事务
+
+```text
+Web paste 事件
+  → 捕获 CodeMirror selection
+  → Promise.all 按剪贴板顺序读取全部 File 数据与 MIME
+  → 单个批量 payload 由原生桥接解码 Base64
+  → 在写入前校验全部真实 PNG/JPEG/GIF/WebP/SVG 载荷
+  → 解析 Draft 或外部 Markdown 目标目录
+  → 用注入 clock/calendar/timeZone 生成本地 `yyyy-MM-dd-HH-mm-ss`
+  → 临时文件原子写入并无覆盖 move；失败回滚本批已创建文件
+  → 按顺序计算并编码全部相对 Markdown 路径
+  → 回到捕获 selection，以一次 CodeMirror 事务插入全部 ![](...)
+```
+
+任何一步抛错都会在“回插链接”之前终止。Draft 无活动文档时以 `notes/` 为链接基准；编辑器收到插入内容后会创建 Draft Markdown。外部会话必须已有位于工作区内的 Markdown，图片进入文档同级 `assets/images/`。
+
+`MarkdownImageAssetStore` 不信任 MIME 或扩展名：PNG/JPEG/GIF/WebP 检查文件签名与必要头字段，SVG 用禁用外部实体解析的 XML 根元素校验。剪贴板内容忽略 `image.png`、`clipboard.png` 等建议名，以 POSIX locale 保证时间名使用 ASCII 数字，验证后的格式决定扩展名；同秒和跨扩展同 stem 碰撞使用 `-2/-3`。Finder 文件入口仍保留并清洗原文件名。
+
+对应 PASTE-01、COMPAT-01。
+
+## 6. 侧栏资源引用拖放
+
+```text
+WorkspaceSidebar 文件行
+  → NSItemProvider: public.file-url
+  → EditorResourceDropWebView 读取 NSURL 与鼠标落点
+  → WorkspaceSession 根目录 + 符号链接真实路径双重边界校验
+  → MarkdownResourceReferenceResolver
+      ├─ 图片：原文件
+      ├─ Markdown：frontmatter title → 首标题 → 文件名
+      └─ Excalidraw：源父目录 `exports/<同名>.svg`（必须已存在）
+  → 以当前 Markdown 目录计算并逐段 URL 编码相对路径
+  → CodeMirror posAtCoords
+  → 一次 dispatch(userEvent: input.drop)
+  → change bridge → WorkspaceController dirty → 既有自动保存
+```
+
+侧栏只声明一个标准 `public.file-url` 数据表示，不设置会被 WebKit 当作额外文本插入的 suggested name，也不创建文件事务。编辑器的 AppKit 拖放目的地按 pasteboard item 精确读取 `file-url`，忽略 plain text/裸路径并按标准 URL 去重；它注销内部 `WKContentView` 的原生 drag destination，并在成功、失败或不支持时都终止文件拖放传播，因此一次事件只能进入一次 resolver/CodeMirror 事务，不能回落成 WebKit 默认 URL、绝对路径、文件名插入或页面导航。resolver 同时检查词法工作区边界和解析符号链接后的真实边界；Finder 中属于已授权工作区的文件走相同入口，外部文件由 resolver 明确拒绝且不扩大授权。
+
+`draggingLocation` 先从窗口基准坐标转换到 flipped 的 `WKWebView` 本地坐标；该 y 已与 CSS viewport 同为从顶部计量，因此只除以 `pageZoom`，不能再次按视图高度翻转。文档滚动由 CodeMirror 的 `posAtCoords` 按当前 viewport 解释，原生层不重复叠加 `scrollTop`。坐标可映射时，外部资源在释放点插入，不删除与释放点无关的既有非空选区；坐标不可映射时，使用事务到达 CodeMirror 时捕获的 selection，并按粘贴语义替换该选区，绝不追加文末。两条路径都只执行一次 `dispatch(userEvent: input.drop)`，保持一次 Undo 与编辑焦点。
+
+`MarkdownResourceReferenceResolver` 是纯决策层：图片与 Markdown 直接引用原 URL；绘图通过 `DrawingStorageLayout` 复用真实 SVG 目标规则，且在 SVG 不存在时失败。它复用图片粘贴链的逐路径段百分号编码规则，因此不复制资源，也不改写源文件。
+
+只有实时编辑的 `CodeMirrorEditorView` 安装可接受目的地。预览、绘图与图片 Surface 用拒绝型 `DropDelegate` 对 `public.file-url` 返回禁止反馈；编辑器专属 WebView 独占文件拖放并拦截完成后的主框架导航，避免文件表示被 Web 内容二次消费或让页面跳离编辑器。
+
+对应 DRAG-01。
+
+## 7. 模块依赖边界
+
+- `Workspace.swift`：纯 Foundation 领域模型和解析，无 UI、无书签、无迁移。
+- `WorkspaceController.swift`：会话控制与 Markdown 文件事务，不持有 WebView/AppKit 文档。
+- `WorkspaceContentView.swift`：应用编排和 Surface 路由，不实现底层文件格式。
+- `WorkspaceSidebar.swift`：目录目录树、授权失败恢复与选择事件，不保存编辑内容。
+- `WorkspaceFileOperations.swift`：工作区限定的创建、复制、重命名、移动与废纸篓事务；统一执行名称校验、冲突拒绝、循环移动拒绝与大小写改名回滚，UI 不直接调用 `FileManager` 写操作。
+- `WorkspaceFileInteractions.swift`：内部默认移动/Option 复制与外部导入的纯 drop 决策、真实 file URL pasteboard、Quick Look 和仅在侧栏聚焦时生效的命令路由。Finder 外部输入只复制；已知跨卷移动由服务层拒绝，绝不隐式复制后删除。
+- `WorkspaceController.swift` 在文件事务前保存受影响的 dirty Markdown，并在成功后重定向活动资源 URL；活动绘图影响操作明确拒绝，直到用户先保存并切换离开。
+- `Drawing/*`：Excalidraw 桥接、会话、自包含源文件与可选 SVG 事务。
+- `MarkdownRendering/*`：CodeMirror/预览与消息桥接；图片文件规则委托给资产存储层。
+- `MarkdownImageAssetStore.swift`：纯文件路由、校验、命名与写入；成功后才返回 Markdown。
+- `MarkdownResourceReference.swift`：纯引用类型映射、权限边界、绘图导出解析、标题回落与相对路径生成；不写文件。
+- `QuickCapture.swift`：Draft 与外部目录安全书签、全局快捷入口、App 生命周期兼容辅助。
+
+## 8. 兼容与迁移边界
+
+- 不移动、删除或批量重写任何旧文件。
+- 新建内容只使用唯一正式目录；旧原型绘图目录不再特殊识别或原位回写。
+- 不兼容不等于删除：旧目录与文件留在磁盘，用户可自行从普通外部文件夹打开受支持文件或手动整理。
+- 外部 Markdown 的既有相对链接保持原样。
+- 不推断外部文件父目录以上的“项目根”。
+- 不引入隐藏工作区元数据文件。
+- `.excalidraw` 与任意 SVG 在 Files 服务中没有配对身份；所有操作只作用于用户明确选择的单个项目。
+- Files 当前只支持单选；没有批量事务或文件操作撤销。冲突与外部变化通过失败、保留源文件和刷新后的真实目录状态收口。
+- 自动化只验证可重复的模型、文件事务与 Web 组件；Finder、真实剪贴板、窗口生命周期和沙盒授权仍由 [PROGRESS.md](PROGRESS.md) 的人工清单收口。

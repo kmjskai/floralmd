@@ -35,8 +35,8 @@ jobs:
 
       - name: Validate final release tag
         run: |
-          VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)"
-          BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Info.plist)"
+          VERSION="$(./scripts/release-metadata.sh version)"
+          BUILD="$(./scripts/release-metadata.sh build)"
           VALIDATE_ARGS=(
             --version "$VERSION"
             --tag "$GITHUB_REF_NAME"
@@ -55,7 +55,7 @@ jobs:
         run: python3 -m unittest discover -s scripts/tests
 
       - name: Test application
-        run: swift test
+        run: ./scripts/test.sh
 
       - name: Build secret-free production candidate
         run: ./scripts/build-app.sh --variant production
@@ -80,8 +80,8 @@ jobs:
 
       - name: Validate protected final tag
         run: |
-          VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)"
-          BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Info.plist)"
+          VERSION="$(./scripts/release-metadata.sh version)"
+          BUILD="$(./scripts/release-metadata.sh build)"
           VALIDATE_ARGS=(
             --version "$VERSION"
             --tag "$GITHUB_REF_NAME"

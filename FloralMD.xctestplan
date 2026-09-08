@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "id": "0F54CAF3-6C92-41F1-9D08-07030B8F7552",
+      "name": "Test Scheme Action",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "codeCoverage": false,
+    "performanceAntipatternCheckerEnabled": true,
+    "targetForVariableExpansion": {
+      "containerPath": "container:FloralMD.xcodeproj",
+      "identifier": "8CA22FAF3028528400913A58",
+      "name": "FloralMD"
+    },
+    "parallelTestingEnabled": false
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:FloralMD.xcodeproj",
+        "identifier": "8CA22FBC3028528500913A58",
+        "name": "FloralMDTests"
+      }
+    }
+  ],
+  "version": 1
+}

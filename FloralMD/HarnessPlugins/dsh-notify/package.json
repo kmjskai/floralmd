@@ -1,0 +1,22 @@
+{
+  "name": "dsh-notify",
+  "description": "DSH task-completion notification bridge: turns background-job settlement into a `floralmd://notify` URL for the host app (FloralMD) to display as a native notification.",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./notify-url": "./lib/notify-url.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "check": "node --check lib/index.js && node --check lib/notify-url.js && node scripts/smoke.mjs"
+  },
+  "license": "MIT"
+}

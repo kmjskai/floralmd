@@ -50,6 +50,6 @@ sign_runtime "$UPDATER"
 sign_runtime "$SPARKLE"
 
 sign_runtime \
-    --entitlements Resources/QuickLook/FloralMDQuickLook.entitlements \
+    --entitlements FloralMDQuickLook/FloralMDQuickLook.entitlements \
     "$QUICK_LOOK"
 sign_runtime "$APP"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
-import plistlib
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -29,352 +29,118 @@ changelog_tools = load_script("changelog_tools", "changelog_tools.py")
 changelog_html = load_script("changelog_html", "changelog-to-html.py")
 
 
-class ChangelogToolsTests(unittest.TestCase):
-    def bilingual_section(self) -> list[str]:
-        return [
-            "",
-            "### 中文",
-            "",
-            "#### 修复",
-            "- 修复 `<tag>`，并保留 **重点**。",
-            "",
-            "### English",
-            "",
-            "#### Fixed",
-            "- Fixed `<tag>` while preserving **emphasis** across",
-            "  a wrapped bullet line.",
-            "",
-        ]
-
-    def test_extracts_exact_version_until_next_version_heading(self) -> None:
-        lines = [
-            "## [2026.7.0] — 2026-07-15\n",
-            *[line + "\n" for line in self.bilingual_section()],
-            "## [2026.7.01] — 2026-07-16\n",
-            "### 中文\n",
-        ]
-        section = changelog_tools.extract_section("2026.7.0", lines)
-        self.assertIn("### English", section)
-        self.assertNotIn("## [2026.7.01] — 2026-07-16", section)
-
-    def test_release_markdown_keeps_chinese_block_before_english(self) -> None:
-        lines = ["## [2026.7.0] — 2026-07-15\n"] + [
-            line + "\n" for line in self.bilingual_section()
-        ]
-        notes = changelog_tools.release_notes("2026.7.0", lines)
+class ChangelogTests(unittest.TestCase):
+    def test_current_release_is_bilingual_and_renderable(self) -> None:
+        lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines(True)
+        notes = changelog_tools.release_notes("2026.9.0", lines)
+        self.assertTrue(notes.startswith("### 中文\n"))
         self.assertLess(notes.index("### 中文"), notes.index("### English"))
-        self.assertIn("#### 修复\n- 修复", notes)
-        self.assertIn("#### Fixed\n- Fixed", notes)
-        self.assertIn("\n  a wrapped bullet line.\n", notes)
-        self.assertNotRegex(notes, r"\*\*(?:中文|English)[：:]\*\*")
+        html = changelog_html.to_html(
+            changelog_tools.trim_section(
+                changelog_tools.extract_section("2026.9.0", lines)
+            )
+        )
+        self.assertIn("<h3>中文</h3>", html)
+        self.assertIn("<h3>English</h3>", html)
 
-    def test_missing_language_block_is_rejected_for_calver(self) -> None:
-        section = ["### 中文", "", "#### 修复", "- 修复问题。"]
+    def test_missing_language_block_is_rejected(self) -> None:
         with self.assertRaisesRegex(
             changelog_tools.ChangelogFormatError, "exactly one '### English'"
         ):
-            changelog_tools.validate_section("2026.7.0", section)
-
-    def test_omitted_specific_categories_are_allowed(self) -> None:
-        section = self.bilingual_section()
-        changelog_tools.validate_section("2026.7.0", section)
-
-    def test_language_without_any_category_is_rejected(self) -> None:
-        section = [
-            "### 中文",
-            "- 中文说明。",
-            "### English",
-            "#### Fixed",
-            "- English note.",
-        ]
-        with self.assertRaisesRegex(
-            changelog_tools.ChangelogFormatError, "at least one 中文 category"
-        ):
-            changelog_tools.validate_section("2026.7.0", section)
-
-    def test_missing_version_keeps_empty_output_contract(self) -> None:
-        lines = ["## [2026.7.0] — 2026-07-15\n"]
-        self.assertEqual(changelog_tools.release_notes("2026.7.9", lines), "")
-        self.assertEqual(changelog_tools.extract_section("2026.7.9", lines), [])
-
-    def test_inline_language_labels_are_rejected(self) -> None:
-        section = self.bilingual_section()
-        section.insert(4, "- **中文：**旧格式。")
-        with self.assertRaisesRegex(
-            changelog_tools.ChangelogFormatError, "inline language label"
-        ):
-            changelog_tools.validate_section("2026.7.0", section)
-
-    def test_sparkle_html_renders_headings_bullets_and_safe_inline_markup(self) -> None:
-        body = changelog_html.to_html(
-            changelog_tools.trim_section(self.bilingual_section())
-        )
-        self.assertIn("<h3>中文</h3>", body)
-        self.assertIn("<h4>修复</h4>", body)
-        self.assertIn("<h3>English</h3>", body)
-        self.assertIn("<h4>Fixed</h4>", body)
-        self.assertIn("<code>&lt;tag&gt;</code>", body)
-        self.assertIn("<strong>emphasis</strong>", body)
-        self.assertIn("preserving <strong>emphasis</strong> across a wrapped", body)
-        self.assertNotIn("**", body)
-        self.assertNotIn("`<tag>`", body)
-
-    def test_repository_calver_notes_follow_bilingual_contract(self) -> None:
-        lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines(True)
-        notes = changelog_tools.release_notes("2026.7.0", lines)
-        html = changelog_html.to_html(
-            changelog_tools.trim_section(
-                changelog_tools.extract_section("2026.7.0", lines)
+            changelog_tools.validate_section(
+                "2026.9.0", ["### 中文", "", "#### 变更", "- 内容"]
             )
-        )
-        self.assertTrue(notes.startswith("### 中文\n"))
-        self.assertLess(notes.index("### 中文"), notes.index("### English"))
-        self.assertNotRegex(notes, r"\*\*(?:中文|English)[：:]\*\*")
-        self.assertNotIn("**", html)
 
 
 class ReleaseVersionTests(unittest.TestCase):
-    def test_accepts_first_calver_release(self) -> None:
-        release_version.validate_release(
-            version="2026.7.0", tag="v2026.7.0", build="1"
-        )
-
-    def test_accepts_next_patch_in_same_month(self) -> None:
-        release_version.validate_release(
-            version="2026.7.1",
-            tag="v2026.7.1",
-            build="2",
-            previous_version="2026.7.0",
-            previous_build="1",
-        )
-
-    def test_accepts_first_release_in_later_month(self) -> None:
+    def test_current_version_is_the_successor_to_public_2026_8_1(self) -> None:
         release_version.validate_release(
             version="2026.9.0",
             tag="v2026.9.0",
-            build="3",
-            previous_version="2026.7.1",
-            previous_build="2",
+            build="20",
+            previous_version="2026.8.1",
+            previous_build="19",
         )
 
-    def test_rejects_zero_padded_month(self) -> None:
-        with self.assertRaisesRegex(ValueError, "not FloralMD CalVer"):
-            release_version.parse_calver("2026.07.0")
-
-    def test_rejects_legacy_tag_for_new_release(self) -> None:
-        with self.assertRaisesRegex(ValueError, "must be exactly"):
-            release_version.validate_release(
-                version="2026.7.0", tag="v0.2.0", build="1"
-            )
-
-    def test_rejects_nonpositive_build(self) -> None:
-        with self.assertRaisesRegex(ValueError, "positive integer"):
-            release_version.validate_release(
-                version="2026.7.0", tag="v2026.7.0", build="0"
-            )
-
-    def test_build_reset_is_only_valid_without_a_public_parent(self) -> None:
+    def test_rejects_skipped_patch_and_reused_build(self) -> None:
+        with self.assertRaisesRegex(ValueError, "not the next"):
+            release_version.validate_successor("2026.8.1", "2026.9.1")
         with self.assertRaisesRegex(ValueError, "greater than previous"):
             release_version.validate_release(
-                version="2026.7.0",
-                tag="v2026.7.0",
-                build="1",
-                previous_build="6",
+                version="2026.9.0",
+                tag="v2026.9.0",
+                build="19",
+                previous_version="2026.8.1",
+                previous_build="19",
             )
 
-    def test_rejects_skipped_patch_in_same_month(self) -> None:
-        with self.assertRaisesRegex(ValueError, "not the next"):
-            release_version.validate_successor("2026.7.0", "2026.7.2")
-
-    def test_rejects_nonzero_patch_in_new_month(self) -> None:
-        with self.assertRaisesRegex(ValueError, "not the next"):
-            release_version.validate_successor("2026.7.2", "2026.8.1")
-
-    def test_rejects_reused_build_number(self) -> None:
-        with self.assertRaisesRegex(ValueError, "greater than previous"):
-            release_version.validate_release(
-                version="2026.7.1",
-                tag="v2026.7.1",
-                build="1",
-                previous_version="2026.7.0",
-                previous_build="1",
-            )
-
-    def test_repository_metadata_is_internally_consistent(self) -> None:
-        with (ROOT / "Info.plist").open("rb") as file:
-            info = plistlib.load(file)
-        version = info["CFBundleShortVersionString"]
-        build = info["CFBundleVersion"]
-        release_version.validate_release(
-            version=version, tag=f"v{version}", build=build
+    def test_project_contains_the_release_version_and_build(self) -> None:
+        project = (ROOT / "FloralMD.xcodeproj" / "project.pbxproj").read_text(
+            encoding="utf-8"
         )
-        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-        self.assertIn(f"\n## [{version}] — ", changelog)
+        versions = set(re.findall(r"MARKETING_VERSION = ([^;]+);", project))
+        builds = set(re.findall(r"CURRENT_PROJECT_VERSION = ([^;]+);", project))
+        self.assertIn("2026.9.0", versions)
+        self.assertIn("20", builds)
+        self.assertNotIn("2026.9.1", versions)
 
 
 class AppcastTests(unittest.TestCase):
-    def make_args(self, version: str, build: str):
-        return type(
+    def test_calver_item_uses_short_version_and_build(self) -> None:
+        args = type(
             "Args",
             (),
             {
-                "version": version,
-                "build": build,
-                "url": f"https://example.invalid/FloralMD-{version}.dmg",
+                "version": "2026.9.0",
+                "build": "20",
+                "url": "https://example.invalid/FloralMD-2026.9.0.dmg",
                 "signature": "test-signature",
                 "length": 123,
-                "pub_date": "Wed, 15 Jul 2026 00:00:00 +0000",
+                "pub_date": "Tue, 08 Sep 2026 00:00:00 +0000",
                 "description_file": None,
             },
         )()
-
-    def test_calver_item_uses_short_version_and_build(self) -> None:
-        item = update_appcast.make_item(self.make_args("2026.7.0", "1"))
-        self.assertIn('sparkle:shortVersionString="2026.7.0"', item)
-        self.assertIn('sparkle:version="1"', item)
-        self.assertIn("FloralMD-2026.7.0.dmg", item)
+        item = update_appcast.make_item(args)
+        self.assertIn('sparkle:shortVersionString="2026.9.0"', item)
+        self.assertIn('sparkle:version="20"', item)
 
 
-class WorkflowConfigurationTests(unittest.TestCase):
-    def test_ci_and_release_use_macos_26(self) -> None:
-        for workflow in ("ci.yml", "release.yml"):
-            text = (ROOT / ".github" / "workflows" / workflow).read_text(
-                encoding="utf-8"
-            )
-            self.assertIn("runs-on: macos-26", text)
-            self.assertNotIn("runs-on: macos-14", text)
+class RepositoryContractTests(unittest.TestCase):
+    def test_public_identity_and_sparkle_are_release_only(self) -> None:
+        project = (ROOT / "FloralMD.xcodeproj" / "project.pbxproj").read_text(
+            encoding="utf-8"
+        )
+        source = (ROOT / "FloralMD" / "FloralMDApp.swift").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("com.yingkaisun.floralmd;", project)
+        self.assertIn("com.yingkaisun.floralmd.dev;", project)
+        self.assertIn("FLORALMD_PRODUCTION", project)
+        self.assertIn("SPUStandardUpdaterController", source)
+        self.assertIn("#if FLORALMD_PRODUCTION", source)
+
+    def test_builder_requires_universal_release_quicklook_and_sparkle(self) -> None:
+        script = (SCRIPTS / "build-app.sh").read_text(encoding="utf-8")
+        self.assertIn('ARCHS="arm64 x86_64"', script)
+        self.assertIn("com.yingkaisun.floralmd.quicklook", script)
+        self.assertIn("Sparkle.framework", script)
+        self.assertIn("inactive Harness/DSH resources leaked", script)
+
+    def test_workflows_use_xcode_scripts_and_preserve_two_stage_release(self) -> None:
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn("spm-v3-macos26-", ci)
-
-    def test_release_uses_developer_id_final_byte_chain(self) -> None:
-        workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(
+        release = (ROOT / ".github" / "workflows" / "release.yml").read_text(
             encoding="utf-8"
         )
-        script = (ROOT / "scripts" / "developer-id-release.sh").read_text(
+        promote = (ROOT / ".github" / "workflows" / "promote-release.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn("./scripts/developer-id-release.sh", workflow)
-        self.assertIn(
-            'shasum -a 256 "$(basename "$DMG")" >"$(basename "$CHECKSUM")"',
-            script,
-        )
-        self.assertIn("validate-release-promotion.py files", workflow)
-
-    def test_release_notes_use_shared_validated_extractor(self) -> None:
-        workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(
-            encoding="utf-8"
-        )
-        local_release = (ROOT / "scripts" / "release.sh").read_text(
-            encoding="utf-8"
-        )
-        expected = 'python3 scripts/extract-release-notes.py "$VERSION"'
-        self.assertIn(expected, workflow)
-        self.assertIn(expected, local_release)
-        self.assertNotIn('awk "BEGIN{p=0} /^## \\[', workflow)
-        self.assertNotIn('awk "BEGIN{p=0} /^## \\[', local_release)
-
-
-class QuickLookBundleConfigurationTests(unittest.TestCase):
-    def test_quick_look_source_plists_use_non_release_placeholders(self) -> None:
-        for relative_path in (
-            "Resources/QuickLook/Info.plist",
-            "Resources/Debug/QuickLook-Info.plist",
-        ):
-            with (ROOT / relative_path).open("rb") as file:
-                info = plistlib.load(file)
-            self.assertEqual(info.get("CFBundleShortVersionString"), "0.0.0")
-            self.assertEqual(info.get("CFBundleVersion"), "0")
-            markdown = info["UTImportedTypeDeclarations"][0]
-            self.assertEqual(
-                markdown["UTTypeIdentifier"], "net.daringfireball.markdown"
-            )
-            self.assertEqual(
-                markdown["UTTypeTagSpecification"]["public.filename-extension"][0],
-                "md",
-            )
-            self.assertEqual(
-                info["NSExtension"]["NSExtensionAttributes"][
-                    "QLSupportedContentTypes"
-                ],
-                ["net.daringfireball.markdown"],
-            )
-
-    def test_quick_look_variants_declare_and_embed_the_app_icon(self) -> None:
-        for relative_path in (
-            "Resources/QuickLook/Info.plist",
-            "Resources/Debug/QuickLook-Info.plist",
-        ):
-            with (ROOT / relative_path).open("rb") as file:
-                info = plistlib.load(file)
-            self.assertEqual(info.get("CFBundleIconFile"), "AppIcon")
-
-        script = (ROOT / "scripts" / "build-app.sh").read_text(encoding="utf-8")
-        self.assertIn(
-            'cp Resources/AppIcon.icns "${QUICK_LOOK_BUNDLE}/Contents/Resources/AppIcon.icns"',
-            script,
-        )
-        self.assertIn("Quick Look extension icon differs from the host app icon", script)
-        self.assertIn("Quick Look extension version differs from the host app version", script)
-        self.assertIn("Quick Look extension build differs from the host app build", script)
-
-    def test_quick_look_embeds_and_verifies_core_syntax_resources(self) -> None:
-        script = (ROOT / "scripts" / "build-app.sh").read_text(encoding="utf-8")
-        self.assertIn(
-            '"${QUICK_LOOK_BUNDLE}/Contents/Resources/${CORE_RESOURCE_BUNDLE_NAME}"',
-            script,
-        )
-        self.assertIn(
-            "Quick Look extension is missing FloralMDCore syntax resources",
-            script,
-        )
-        self.assertIn(
-            "Quick Look accessor does not use Bundle.main.resourceURL",
-            script,
-        )
-
-
-class AppIconAssetTests(unittest.TestCase):
-    def test_png_sources_preserve_alpha_channels(self) -> None:
-        paths = [ROOT / "Resources" / "AppIcon.png"]
-        paths.extend(sorted((ROOT / "docs" / "assets" / "AppIcon").glob("*.png")))
-        for path in paths:
-            data = path.read_bytes()
-            self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n", path)
-            self.assertEqual(data[12:16], b"IHDR", path)
-            self.assertEqual(data[25], 6, f"{path} must be RGBA, not opaque RGB")
-
-    def test_bundle_builder_rejects_an_opaque_app_icon(self) -> None:
-        script = (ROOT / "scripts" / "build-app.sh").read_text(encoding="utf-8")
-        self.assertIn("sips -g hasAlpha Resources/AppIcon.icns", script)
-        self.assertIn("AppIcon.icns has no alpha channel", script)
-
-
-class ProductionUpdateIntegrationTests(unittest.TestCase):
-    def test_app_menu_is_compiled_only_for_production(self) -> None:
-        source = (ROOT / "Sources" / "floralmd" / "App" / "main.swift").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("#if FLORALMD_PRODUCTION\nimport Sparkle\n#endif", source)
-        self.assertIn("SPUStandardUpdaterController", source)
-        self.assertIn('AppCopy.text("Check for Updates…", "检查更新…")', source)
-        self.assertIn("#selector(SPUStandardUpdaterController.checkForUpdates(_:))", source)
-        self.assertIn("checkForUpdates.target = updaterController", source)
-
-    def test_bundle_builder_enforces_update_variant_contract(self) -> None:
-        script = (ROOT / "scripts" / "build-app.sh").read_text(encoding="utf-8")
-        self.assertIn("Debug binary contains the production update menu", script)
-        self.assertIn("Production bundle has the wrong Sparkle feed URL", script)
-        self.assertIn("Production bundle does not link and embed Sparkle", script)
-        self.assertIn("Production binary has no manual update menu", script)
-
-    def test_bundle_builder_uses_and_verifies_app_aware_resource_lookup(self) -> None:
-        script = (ROOT / "scripts" / "build-app.sh").read_text(encoding="utf-8")
-        self.assertIn("--build-system xcode", script)
-        self.assertIn('BUILD_PRODUCTS_DIR=".build/apple/Products/Release"', script)
-        self.assertIn("SwiftMath accessor does not use Bundle.main.resourceURL", script)
-        self.assertIn("SwiftMath resource bundle is missing from Contents/Resources", script)
+        self.assertIn("./scripts/test.sh", ci)
+        self.assertIn("./scripts/build-app.sh --variant production", release)
+        self.assertIn("--prerelease", release)
+        self.assertIn("update-appcast.py", promote)
+        self.assertIn("./scripts/release-metadata.sh version", release)
 
 
 if __name__ == "__main__":

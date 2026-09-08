@@ -1,0 +1,9 @@
+# dsh-notify: background-job completion notification bridge.
+#
+# Mounted by the FloralMD host at startup (copied into
+# $DSH_HOME/profiles/node_modules/dsh-notify, entry appended to
+# $DSH_HOME/profiles/web/cordis.patch.yml). Same idempotent install
+# semantics as dsh-usage-stats' installer: never rewrite existing entries.
+- insert:
+    - id: dsh-notify
+      name: dsh-notify

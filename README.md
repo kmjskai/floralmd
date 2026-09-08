@@ -1,228 +1,103 @@
-<!-- Modified from Edmund by Yingkai Sun for FloralMD. -->
 # FloralMD
 
-![macOS Version Compatibility](https://img.shields.io/badge/platform-macOS%2014.0%2B-0064e1?style=flat-square&color=0064e1)
-![GitHub License](https://img.shields.io/github/license/yingkaisun-kai/floralmd?style=flat-square&color=772678)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/yingkaisun-kai/floralmd/total?style=flat-square&color=ff6916)
-![FloralMD App Icon](docs/assets/AppIcon/AppIcon_16x16.png)
-
-![FloralMD native Markdown editor with comparison matrix and translucent floating note](docs/assets/floralmd-poster.png)
+![FloralMD App Icon](docs/assets/AppIcon/AppIcon.png)
 
 [中文](#中文) · [English](#english)
 
 ## 中文
 
-FloralMD（Floral + Markdown）是一款面向 macOS 的原生、文件优先 Markdown
-编辑器。它允许你直接打开任意位置的 `.md` 文件，在同一个窗口中通过标签页处理
-多个文档，并获得接近 Obsidian、Typora 的行内实时渲染体验——但不要求先创建或
-打开一个文件夹，也不要求把文档迁移进特定的知识库。
+FloralMD 是一款面向 macOS 的本地文件优先 Markdown 编辑器。它直接使用你选择的文件夹和其中的普通文件，不要求账户、云端数据库或专用项目格式。
 
-### 为什么做 FloralMD
+### 主要能力
 
-我一直希望 macOS 上有一款足够原生、轻量，又能直接编辑和渲染 Markdown 的工具。
-Obsidian 很强大，但它以文件夹和 Vault 为中心：当我只是想打开散落在不同位置的
-单个 Markdown 文件时，这种使用方式会带来不必要的上下文和组织负担。
+- **真实文件工作区**：浏览、创建、重命名、移动、复制和移到系统废纸篓。
+- **实时 Markdown 编辑**：在保留原始 Markdown 的同时渲染标题、列表、表格、代码、数学公式、Mermaid、脚注、标签和本地图片。
+- **编辑与只读预览**：在同一文件上切换实时编辑和阅读模式。
+- **图片与绘图资源**：查看常见位图与 SVG，并在工作区内处理 Excalidraw 绘图。
+- **大纲与查找**：按标题浏览长文档，使用应用内查找和命令面板快速操作。
+- **工作辅助**：窗口置顶、跨 Space、透明度、内容宽度和打字机模式。
+- **Finder Quick Look**：在 Finder 中直接预览 Markdown。
+- **外部修改保护**：其他程序修改当前文件时，避免静默覆盖未保存内容。
 
-FloralMD 围绕这种单文件工作方式设计：强调任意文件打开、单文件阅读与编辑、多标签、
-文档大纲、附近文件导航，以及 Finder 中的 Markdown 预览。它不试图取代完整的知识库，
-而是让一个普通 Markdown 文件在 macOS 上也能获得自然、完整的使用体验。
+### 2026.9.0 重大改版
 
-### 为什么叫 FloralMD
+FloralMD 的 macOS 版本在 `2026.9.0` 完成整体重构。新版从“单文件、标签页和附加面板”转为“本地工作区、真实文件侧栏和单一活动资源”的产品结构。
 
-每一个 Markdown 文件都可以像一片独立的花瓣：它不必先属于某个 Vault，也不必被
-放进规定的目录才能打开。需要时，来自不同位置的文件又可以在同一个窗口中并列展开，
-共同组成一次完整的工作现场。现有花瓣图标保留了这个“单个文件”的意象。
+这不是对旧界面的逐项复刻。以下旧版能力已经移除：
 
-“Floral”把视角从单片花瓣扩展到完整的花卉意象，也代表这款工具希望保持的气质：
-轻量、自然、安静，专注于内容本身。`MD` 则明确了它所服务的文件格式，因此得名
-**FloralMD**。
+- Git 状态、当前文件提交和提交历史面板；
+- 侧边语义 Map／Minimap；
+- 原生多文档标签页；
+- 旧版附近文件栏及 Files／Git 双侧栏结构；
+- 旧版 Markdown 扩展开关与自定义语法定义入口。
 
-### 主要特点
+新版不会修改你的 Markdown 文件格式，也不会把文件导入数据库。升级前仍建议备份正在编辑的重要内容；旧版应用偏好和窗口布局不会迁移到新架构。
 
-完整的当前功能列表见 [FloralMD 功能说明](docs/FEATURES.md)。
+### 系统要求
 
-- **直接打开文件**：从 Finder 或应用中打开任意 `.md` 文件，无需 Vault。
-- **行内实时渲染**：提供接近 Typora、Obsidian 的所见即所得编辑体验。
-- **多文档标签页**：不同目录中的 Markdown 文件可以出现在同一窗口中。
-- **单文件导航**：左侧大纲聚焦当前文档，右侧文件栏用于浏览附近文件和已打开文档。
-- **语义缩略图**：用标题、列表、代码和 Git 改动色块概览长文档，并可单击或拖动滚动。
-- **Finder Quick Look**：在 Finder 中选中文件并按空格，直接查看 FloralMD 风格的渲染结果。
-- **悬浮便签**：窗口可置顶并使用半透明背景；快速记录可从任何应用唤起置顶草稿。
-- **原生 macOS**：使用 Swift、AppKit 和 TextKit 2 构建，不依赖 Electron。
-- **本地优先**：默认离线工作，并可阻止外部图片和不安全的 HTML 内容。
-- **Markdown 扩展**：支持数学公式、Callout、Wiki Link 等常用语法。
-
-### 一眼看懂 FloralMD 的不同
-
-**像普通文件一样随处打开，像现代编辑器一样实时渲染，也能像便签一样悬浮在桌面上。**
-
-| 工具 | 无需 Vault | 行内实时渲染 | 悬浮便签 | Finder Quick Look | Git 改动提示 | macOS 专属原生 | 开源 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **FloralMD** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Typora](https://typora.io/) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| [Obsidian](https://obsidian.md/) | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| [MarkEdit](https://github.com/MarkEdit-app/MarkEdit) | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ |
-| [MarkText](https://github.com/marktext/marktext) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-
-`✅` 表示官方内置能力；`❌` 不代表无法通过插件或外部工具实现。对比依据截至
-2026-07-16。“悬浮便签”指置顶、半透明背景与快速记录组成的完整工作流；
-“macOS 专属原生”不包括仅提供 Mac 版本的跨平台应用。查看
-[详细对比、判定口径与资料来源](docs/MARKDOWN_EDITOR_COMPARISON.md)。
+- macOS 26.5 或更高版本
+- Apple silicon 或 Intel Mac
 
 ### 安装
 
-从 [Releases](https://github.com/yingkaisun-kai/floralmd/releases/latest) 下载
-`FloralMD-<版本>.dmg`，打开后将 `FloralMD.app` 拖入“应用程序”文件夹。
+从 [GitHub Releases](https://github.com/yingkaisun-kai/floralmd/releases/latest) 下载 `FloralMD-<版本>.dmg`，打开后将 `FloralMD.app` 拖入“应用程序”。正式安装包使用 Developer ID 筛名并经过 Apple 公证。
 
-从 `2026.7.14` 起，官方 Release 安装包由受保护的 GitHub Actions 统一构建，
-使用 Apple Developer ID 签名并经过 Apple 公证，可通过 macOS Gatekeeper
-正常安装和启动。如果当前正式版仍被 macOS 报告为无法验证，请不要绕过安全检查；
-请先核对 Release 提供的 SHA-256，并通过项目 Issue 报告。
+### 数据与隐私
 
-正式版使用 FloralMD 专用 EdDSA 密钥和独立发布 feed 提供 Sparkle 更新，并包含
-标准“检查更新…”入口。
-本地 Debug 构建保持完全隔离，不链接或暴露生产更新器。
+- 内容保存在用户选择的普通文件夹中；FloralMD 不建立账户或云端内容数据库。
+- 当前 macOS 版本为了直接操作用户明确选择的工作区，不使用 App Sandbox。
+- 删除操作进入系统废纸篓；同名目标不会被静默覆盖。
+- 应用仅在打开网页、邮件链接或检查更新等明确操作中使用网络。
 
-### 本地构建
+### 从源码构建
 
-需要 macOS 14 或更高版本，以及完整安装的 Xcode：
+需要完整安装 Xcode：
 
 ```bash
-swift build
-swift test
-./scripts/build-app.sh
+xcodebuild -project FloralMD.xcodeproj -scheme FloralMD \
+  -configuration Debug -destination 'platform=macOS' build
 ```
 
-本地构建默认生成身份完全隔离的 `build/FloralMD-Debug.app`，应直接在构建目录运行，
-不要复制成 `/Applications/FloralMD.app`。调试 Finder Quick Look 时使用
-`./scripts/build-app.sh --with-quick-look`；该扩展也使用独立 Debug 身份。
-日常使用的正式版只能从 GitHub Release DMG 安装。
-
-### 核心依赖
-
-- [swift-markdown](https://github.com/swiftlang/swift-markdown)
-- [SwiftMath](https://github.com/mgriebling/SwiftMath)
-- [Sparkle](https://github.com/sparkle-project/Sparkle)
-
-### 关注作者
-
-想了解 FloralMD 的设计、开发过程和更多独立产品，欢迎在小红书关注
-**[凯门见山Kai](https://www.xiaohongshu.com/user/profile/67305604000000001c01b97a)**。
+Debug 构建使用 `com.yingkaisun.floralmd.dev` 和 `FloralMD Dev`，不会覆盖正式版身份。
 
 ## English
 
-FloralMD is a native, file-first Markdown editor for macOS. It opens `.md` files
-from anywhere, keeps documents from different folders together as window tabs,
-and provides inline live rendering without requiring a vault or a dedicated
-workspace folder.
-
-### Why FloralMD
-
-I wanted a Markdown experience on macOS that felt native and lightweight while
-still rendering the document as I edited it. Obsidian is powerful, but its
-folder- and vault-centered workflow feels unnecessarily heavy when I only want
-to open an individual Markdown file stored somewhere on my Mac.
-
-FloralMD is designed around that single-file workflow: arbitrary-file opening,
-focused reading and editing, window tabs, document outlines, nearby-file
-navigation, and Finder previews. It does not try to replace a full knowledge
-base; it gives an ordinary Markdown file a complete, natural home on macOS.
-
-### Why the name FloralMD
-
-Each Markdown file can be its own petal. It does not need to belong to a vault
-or live inside a prescribed folder before it can be opened. When useful, files
-from different locations can still come together in one window and form a
-complete working context. The existing petal icon preserves that single-file
-idea.
-
-“Floral” broadens the image from one petal to the larger floral whole while
-keeping the app's intended character: light, natural, quiet, and focused on the
-document itself. `MD` makes its purpose explicit—hence **FloralMD**.
+FloralMD is a local, file-first Markdown editor for macOS. It works directly with folders and ordinary files you choose, without requiring an account, cloud database, or proprietary project format.
 
 ### Highlights
 
-See [FloralMD Features](docs/FEATURES.md) for the complete current feature list.
+- A real-file workspace with safe file operations
+- Live Markdown editing that preserves the original source
+- Edit and read-only preview modes
+- Local images, SVG viewing, and Excalidraw resources
+- Outline, find, and a command palette
+- Window pinning, transparency, content width, and typewriter mode
+- Finder Quick Look for Markdown
+- Conflict protection when another app changes the active file
 
-- **Open any file**: Open `.md` files directly from Finder or the app—no vault required.
-- **Inline live rendering**: A Typora- and Obsidian-like editing experience.
-- **Window tabs**: Keep Markdown files from different folders in one window.
-- **Document-first navigation**: A left outline for the current document and a right sidebar for nearby and open files.
-- **Semantic minimap**: Scan headings, lists, code, and Git changes in long documents, then click or drag to scroll.
-- **Finder Quick Look**: Select a Markdown file and press Space for a FloralMD-rendered preview.
-- **Floating notes**: Pin a translucent document above other apps, or summon an always-on-top draft with Quick Capture.
-- **Native macOS**: Built with Swift, AppKit, and TextKit 2 rather than Electron.
-- **Local first**: Works offline by default, with controls for external images and unsafe HTML.
-- **Markdown extensions**: Supports math, callouts, wiki links, and other practical syntax.
+### 2026.9.0 major redesign
 
-### FloralMD at a glance
+The macOS app was rebuilt around a local workspace, a real-file sidebar, and one active resource per window. This release intentionally removes the legacy Git status/commit/history panel, semantic minimap, native document tabs, the nearby-files and Files/Git dual-sidebar layout, and the old Markdown-extension settings.
 
-**Open Markdown anywhere, edit with live rendering, or keep it floating like a desktop note.**
+Markdown files remain ordinary files and are not migrated into a database. Back up important work before upgrading; legacy app preferences and window layouts are not migrated to the new architecture.
 
-| Tool | No vault required | Inline live rendering | Floating notes | Finder Quick Look | Git change cues | Mac-native only | Open source |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **FloralMD** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Typora](https://typora.io/) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| [Obsidian](https://obsidian.md/) | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| [MarkEdit](https://github.com/MarkEdit-app/MarkEdit) | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ |
-| [MarkText](https://github.com/marktext/marktext) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+### Requirements and installation
 
-`✅` means built into the official product; `❌` does not mean a plugin or
-external tool cannot provide it. Compared using public information available on
-2026-07-16. “Floating notes” means the complete combination of always-on-top
-windows, a translucent background, and Quick Capture. “Mac-native only”
-excludes cross-platform products that also ship a Mac version. Read the
-[detailed comparison, criteria, and sources](docs/MARKDOWN_EDITOR_COMPARISON.md#english).
+FloralMD requires macOS 26.5 or later and supports Apple silicon and Intel Macs. Download `FloralMD-<version>.dmg` from [GitHub Releases](https://github.com/yingkaisun-kai/floralmd/releases/latest), then drag the app into Applications. Official builds are Developer ID signed and notarized by Apple.
 
-### Installation
+### Data and privacy
 
-Download `FloralMD-<version>.dmg` from the
-[latest release](https://github.com/yingkaisun-kai/floralmd/releases/latest), open
-it, and drag `FloralMD.app` into Applications.
+Your content stays in folders you choose. FloralMD has no account system or cloud content database. The current macOS app is not sandboxed so it can work directly with explicitly selected workspaces. Deletions use the system Trash, and existing files are never silently overwritten.
 
-Starting with `2026.7.14`, official Release installers are built by protected
-GitHub Actions, signed with an Apple Developer ID, and notarized by Apple, so
-they install and launch normally through macOS Gatekeeper. If macOS reports
-that the current stable release cannot be verified, do not bypass the security
-check; verify the SHA-256 supplied with the Release and report the problem in a
-project Issue.
-
-Production releases use Sparkle with a FloralMD-specific EdDSA key and
-dedicated release feed, including the standard **Check for Updates…** command.
-Local Debug builds remain fully isolated and do not link or expose the
-production updater.
-
-### Build locally
-
-FloralMD requires macOS 14 or later and a full Xcode installation:
+### Build from source
 
 ```bash
-swift build
-swift test
-./scripts/build-app.sh
+xcodebuild -project FloralMD.xcodeproj -scheme FloralMD \
+  -configuration Debug -destination 'platform=macOS' build
 ```
 
-Local builds create the fully isolated `build/FloralMD-Debug.app` and should run
-in place, never be copied to `/Applications/FloralMD.app`. Use
-`./scripts/build-app.sh --with-quick-look` only when debugging the independently
-identified Finder Quick Look extension. Install the production app only from a
-GitHub Release DMG.
-
-### Core dependencies
-
-- [swift-markdown](https://github.com/swiftlang/swift-markdown)
-- [SwiftMath](https://github.com/mgriebling/SwiftMath)
-- [Sparkle](https://github.com/sparkle-project/Sparkle)
-
-### Follow the maker
-
-For FloralMD design notes, development updates, and other indie projects,
-follow **[凯门见山Kai](https://www.xiaohongshu.com/user/profile/67305604000000001c01b97a)**
-on Xiaohongshu (REDnote).
+Debug builds use the isolated `com.yingkaisun.floralmd.dev` identity.
 
 ## License
 
-[Apache License 2.0](LICENSE). Upstream attribution and modification context are
-recorded in [NOTICE](NOTICE). Vendored asset licenses are kept in
-[LICENSES](LICENSES/); applicable SwiftPM dependency license texts are copied
-from the resolved packages into the app bundle at build time.
+FloralMD is released under the Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
