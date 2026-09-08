@@ -19,9 +19,9 @@ FloralMD 是一款面向 macOS 的本地文件优先 Markdown 编辑器。它直
 - **Finder Quick Look**：在 Finder 中直接预览 Markdown。
 - **外部修改保护**：其他程序修改当前文件时，避免静默覆盖未保存内容。
 
-### 2026.9.0 重大改版
+### 2026.9.1 重大改版
 
-FloralMD 的 macOS 版本在 `2026.9.0` 完成整体重构。新版从“单文件、标签页和附加面板”转为“本地工作区、真实文件侧栏和单一活动资源”的产品结构。
+FloralMD 的 macOS 版本在 `2026.9.1` 完成整体重构。新版从“单文件、标签页和附加面板”转为“本地工作区、真实文件侧栏和单一活动资源”的产品结构。
 
 这不是对旧界面的逐项复刻。以下旧版能力已经移除：
 
@@ -75,7 +75,7 @@ FloralMD is a local, file-first Markdown editor for macOS. It works directly wit
 - Finder Quick Look for Markdown
 - Conflict protection when another app changes the active file
 
-### 2026.9.0 major redesign
+### 2026.9.1 major redesign
 
 The macOS app was rebuilt around a local workspace, a real-file sidebar, and one active resource per window. This release intentionally removes the legacy Git status/commit/history panel, semantic minimap, native document tabs, the nearby-files and Files/Git dual-sidebar layout, and the old Markdown-extension settings.
 

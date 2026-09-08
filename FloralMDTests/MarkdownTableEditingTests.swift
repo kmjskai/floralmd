@@ -75,7 +75,11 @@ struct MarkdownTableEditingTests {
             isARepeat: false,
             keyCode: 51
         ))
-        NSApp.sendEvent(event)
+        // Exercise the hosted AppKit view directly. Routing through NSApp is
+        // nondeterministic when the full WebKit suite owns several short-lived
+        // windows: the event can be delivered after another test window has
+        // become key even though this event carries our window number.
+        controller.view.keyDown(with: event)
 
         let deleted = try #require(await waitForLineCount(3, in: controller))
         #expect(!deleted.contains("甲"))
