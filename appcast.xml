@@ -6,6 +6,53 @@
         <description>FloralMD release feed</description>
         <language>en</language>
         <item>
+            <title>FloralMD 2026.9.2</title>
+            <pubDate>Tue, 08 Sep 2026 05:50:41 +0000</pubDate>
+            <description><![CDATA[
+<style>body{font:13px -apple-system,system-ui;color:#111;margin:8px}h3{font-size:15px;margin:14px 0 6px}h4{font-size:13px;margin:12px 0 4px}ul{margin:0 0 8px;padding-left:20px}li{margin:2px 0}code{font-family:ui-monospace,monospace;background:rgba(127,127,127,.15);padding:1px 4px;border-radius:3px}@media(prefers-color-scheme:dark){body{color:#eee}}</style>
+<h3>中文</h3>
+<h4>变更</h4>
+<ul>
+<li>macOS 版本完成整体重构，改为以本地文件夹为工作区、真实文件侧栏和单一活动资源为核心的编辑结构。</li>
+<li>Markdown 始终保存为普通源文件，不导入专用数据库；支持实时编辑、只读预览、大纲、图片、表格、数学公式、Mermaid、脚注和 Finder Quick Look。</li>
+<li>新增工作区内安全文件操作、外部修改同步与未保存冲突保护、图片查看器、命令面板、三档窗口置顶、透明度和打字机模式。</li>
+<li>正式产品身份继续使用 FloralMD、<code>com.yingkaisun.floralmd</code> 及既有 GitHub 发布与 Sparkle 更新通道。</li>
+<li>最低系统版本调整为 macOS 26.5；升级不会改写 Markdown 文件格式，重大升级前仍建议备份重要内容。</li>
+</ul>
+<h4>移除</h4>
+<ul>
+<li>移除旧版 Git 状态、当前文件提交和提交历史面板。</li>
+<li>移除侧边语义 Map／Minimap。</li>
+<li>移除原生多文档标签页，以及附近文件栏和 Files／Git 双侧栏结构。</li>
+<li>移除旧版 Markdown 扩展开关与自定义语法定义入口。</li>
+<li>旧版应用偏好和窗口布局不会迁移到新架构。</li>
+</ul>
+<h3>English</h3>
+<h4>Changed</h4>
+<ul>
+<li>Rebuilt the macOS app around local folder workspaces, a real-file sidebar, and one active resource per window.</li>
+<li>Kept Markdown as ordinary source files while adding live editing, read-only preview, outlines, images, tables, math, Mermaid, footnotes, and Finder Quick Look.</li>
+<li>Added safe workspace file operations, external-change synchronization and conflict protection, an image viewer, command palette, three window-pinning modes, transparency, and typewriter mode.</li>
+<li>Continued the FloralMD product identity, <code>com.yingkaisun.floralmd</code>, existing GitHub release history, and Sparkle update channel.</li>
+<li>Raised the minimum system requirement to macOS 26.5. The upgrade does not rewrite Markdown file formats; back up important work before a major upgrade.</li>
+</ul>
+<h4>Removed</h4>
+<ul>
+<li>Removed the legacy Git status, current-file commit, and commit-history panel.</li>
+<li>Removed the semantic side map/minimap.</li>
+<li>Removed native multi-document tabs and the nearby-files / Files-Git dual-sidebar layout.</li>
+<li>Removed the legacy Markdown-extension toggles and custom syntax-definition entry point.</li>
+<li>Legacy preferences and window layouts are not migrated to the new architecture.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/yingkaisun-kai/floralmd/releases/download/v2026.9.2/FloralMD-2026.9.2.dmg"
+                       sparkle:version="22"
+                       sparkle:shortVersionString="2026.9.2"
+                       sparkle:edSignature="46IErXgJ+RGw2dhIbnTwNkbvSITzeNpDSyxQNxkMbOCFksP7ugGQQRNp+VIseHm4K7QAtpZnanAoTqGWOdIVBw=="
+                       length="52240045"
+                       type="application/x-apple-diskimage"/>
+        </item>
+        <item>
             <title>FloralMD 2026.7.15</title>
             <pubDate>Wed, 29 Jul 2026 14:54:38 +0000</pubDate>
             <description><![CDATA[
