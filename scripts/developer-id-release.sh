@@ -148,8 +148,8 @@ CHECKSUM="$(dirname "$DMG")/FloralMD-${VERSION}.sha256"
 )
 ./scripts/verify-release-artifact.sh final-dmg "$DMG" "$CHECKSUM"
 
-SIGN_UPDATE="$(find .build -type f -name sign_update -perm -111 -print -quit)"
-GENERATE_KEYS="$(find .build -type f -name generate_keys -perm -111 -print -quit)"
+SIGN_UPDATE="$(find build/SourcePackages -type f -name sign_update -perm -111 -print -quit)"
+GENERATE_KEYS="$(find build/SourcePackages -type f -name generate_keys -perm -111 -print -quit)"
 [ -n "$SIGN_UPDATE" ] || {
     echo "Error: Sparkle sign_update was not found." >&2
     exit 1

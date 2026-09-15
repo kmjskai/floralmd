@@ -11,6 +11,40 @@ first, with `#### 新增` / `#### 变更` / `#### 修复` categories as needed; 
 complete `### English` block follows, using the corresponding Keep a Changelog
 categories. Language is never marked with inline bold labels.
 
+## [2026.9.2] — 2026-09-08
+
+### 中文
+
+#### 变更
+- macOS 版本完成整体重构，改为以本地文件夹为工作区、真实文件侧栏和单一活动资源为核心的编辑结构。
+- Markdown 始终保存为普通源文件，不导入专用数据库；支持实时编辑、只读预览、大纲、图片、表格、数学公式、Mermaid、脚注和 Finder Quick Look。
+- 新增工作区内安全文件操作、外部修改同步与未保存冲突保护、图片查看器、命令面板、三档窗口置顶、透明度和打字机模式。
+- 正式产品身份继续使用 FloralMD、`com.yingkaisun.floralmd` 及既有 GitHub 发布与 Sparkle 更新通道。
+- 最低系统版本调整为 macOS 26.5；升级不会改写 Markdown 文件格式，重大升级前仍建议备份重要内容。
+
+#### 移除
+- 移除旧版 Git 状态、当前文件提交和提交历史面板。
+- 移除侧边语义 Map／Minimap。
+- 移除原生多文档标签页，以及附近文件栏和 Files／Git 双侧栏结构。
+- 移除旧版 Markdown 扩展开关与自定义语法定义入口。
+- 旧版应用偏好和窗口布局不会迁移到新架构。
+
+### English
+
+#### Changed
+- Rebuilt the macOS app around local folder workspaces, a real-file sidebar, and one active resource per window.
+- Kept Markdown as ordinary source files while adding live editing, read-only preview, outlines, images, tables, math, Mermaid, footnotes, and Finder Quick Look.
+- Added safe workspace file operations, external-change synchronization and conflict protection, an image viewer, command palette, three window-pinning modes, transparency, and typewriter mode.
+- Continued the FloralMD product identity, `com.yingkaisun.floralmd`, existing GitHub release history, and Sparkle update channel.
+- Raised the minimum system requirement to macOS 26.5. The upgrade does not rewrite Markdown file formats; back up important work before a major upgrade.
+
+#### Removed
+- Removed the legacy Git status, current-file commit, and commit-history panel.
+- Removed the semantic side map/minimap.
+- Removed native multi-document tabs and the nearby-files / Files-Git dual-sidebar layout.
+- Removed the legacy Markdown-extension toggles and custom syntax-definition entry point.
+- Legacy preferences and window layouts are not migrated to the new architecture.
+
 ## [2026.8.0] — 2026-08-05
 
 ### 中文

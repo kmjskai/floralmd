@@ -12,8 +12,8 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)"
-BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Info.plist)"
+VERSION="$(./scripts/release-metadata.sh version)"
+BUILD="$(./scripts/release-metadata.sh build)"
 VALIDATE_ARGS=(
     --version "$VERSION"
     --tag "v${VERSION}"
@@ -37,7 +37,7 @@ fi
 python3 scripts/validate-release-version.py "${VALIDATE_ARGS[@]}"
 python3 scripts/extract-release-notes.py "$VERSION" >/dev/null
 python3 -m unittest discover -s scripts/tests
-swift test
+./scripts/test.sh
 ./scripts/build-app.sh --variant production
 
 echo "Validated local FloralMD ${VERSION} (${BUILD}) candidate."

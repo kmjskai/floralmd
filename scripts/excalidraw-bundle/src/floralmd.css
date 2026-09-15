@@ -1,0 +1,11 @@
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Keep offline shortcut help without exposing upstream external promotion. */
+.HelpDialog__header {
+  display: none !important;
+}

@@ -1,36 +1,12 @@
-# Modified from Edmund by Yingkai Sun for FloralMD.
-# AI
-.claude/worktrees/
-.claude/settings.json
-.claude/settings.local.json
-.codex/config.toml
-
-# local tooling
-.worktrees/
-Tests/FloralMDTests/_RenderDump.swift
-Tests/FloralMDTests/_RenderEdit.swift
-
-# local files
-/test-files/
-/tmp/
-/dev-notes/
-
-# dev stuff
-.build/
-build/
-Packages/
+# Xcode user-specific workspace settings
 xcuserdata/
-DerivedData/
+
+# Local build caches and derived data
+.spm-cache/
+.spm-checkouts/
+.xcode-dd/
+.xcode-home/
+build/
 __pycache__/
-*.py[cod]
-.swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-
-# Sparkle private key
-sparkle_private_key.txt
-floralmd_sparkle_private_key.txt
-.secrets/
-
-# system
+*.pyc
 .DS_Store
-.netrc

@@ -50,8 +50,8 @@ jobs:
 
       - name: Validate tag, source, and version metadata
         run: |
-          VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)"
-          BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Info.plist)"
+          VERSION="$(./scripts/release-metadata.sh version)"
+          BUILD="$(./scripts/release-metadata.sh build)"
           VALIDATE_ARGS=(
             --version "$VERSION"
             --tag "$RELEASE_TAG"

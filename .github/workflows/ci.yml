@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: test
+  verify:
+    name: release controls and production build
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
@@ -32,16 +32,17 @@ jobs:
           xcodebuild -version
           swift --version
 
-      # Cache the SwiftPM build (deps + compiled objects) keyed on the resolved
-      # dependency graph, so green runs don't recompile SwiftMath etc. each time.
-      - name: Cache .build
+      - name: Cache Swift packages
         uses: actions/cache@v5
         with:
-          path: .build
-          # v3-macos26 isolates this cache from Xcode 16 artifacts created by
-          # the retired macos-14 runner.
-          key: spm-v3-macos26-${{ runner.os }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: spm-v3-macos26-${{ runner.os }}-
+          path: build/SourcePackages
+          key: xcode-spm-v1-macos26-${{ runner.os }}-${{ hashFiles('FloralMD.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: xcode-spm-v1-macos26-${{ runner.os }}-
 
-      - name: Test
-        run: swift test
+      - name: Test release controls
+        run: python3 -m unittest discover -s scripts/tests
+
+      # Full AppKit/XCTest coverage stays in the local pre-release gate. The
+      # hosted headless runner cannot reliably connect to the launched test app.
+      - name: Build secret-free production candidate
+        run: ./scripts/build-app.sh --variant production

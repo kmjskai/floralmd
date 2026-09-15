@@ -1,0 +1,1337 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		51A10001303A000000000001 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 51A10002303A000000000001 /* Markdown */; };
+		51A10003303A000000000001 /* FloralMDQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 51A10004303A000000000001 /* FloralMDQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		51A10005303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10006303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift */; };
+		51A10007303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10008303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift */; };
+		51A10009303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000A303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift */; };
+		51A1000B303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000C303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift */; };
+		51A1000D303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000E303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift */; };
+		51A1000F303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10010303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift */; };
+		51A10011303A000000000001 /* FloralMD/Vendor in Resources */ = {isa = PBXBuildFile; fileRef = 51A10012303A000000000001 /* FloralMD/Vendor */; };
+		8CA230013028528400913A58 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 8CA230023028528400913A58 /* Markdown */; };
+		9F100001303A000000000001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 9F100002303A000000000001 /* Sparkle */; };
+		5AA11F7D00000000000000DE /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 8CA230023028528400913A58 /* Markdown */; };
+		5AA11F7D00000000000000ED /* FloralMDQuickLook/PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10006303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift */; };
+		5AA11F7D00000000000000EE /* FloralMD/MarkdownRendering/MarkdownHTML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10008303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift */; };
+		5AA11F7D00000000000000EF /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000A303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift */; };
+		5AA11F7D00000000000000F0 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000C303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift */; };
+		5AA11F7D00000000000000F1 /* FloralMD/MarkdownRendering/MarkdownTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A1000E303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift */; };
+		5AA11F7D00000000000000F2 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A10010303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift */; };
+		5AA11F7D00000000000000F3 /* FloralMD/Vendor in Resources */ = {isa = PBXBuildFile; fileRef = 51A10012303A000000000001 /* FloralMD/Vendor */; };
+		5AA11F7D00000000000000E9 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 51A10002303A000000000001 /* Markdown */; };
+		5AA11F7D00000000000000EC /* FloralMDQuickLook-Harness.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5AA11F7D00000000000000E2 /* FloralMDQuickLook-Harness.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		51A10013303A000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CA22FA83028528400913A58 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 51A10014303A000000000001;
+			remoteInfo = FloralMDQuickLook;
+		};
+		8CA22FBE3028528500913A58 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CA22FA83028528400913A58 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8CA22FAF3028528400913A58;
+			remoteInfo = FloralMD;
+		};
+		8CA22FC83028528500913A58 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CA22FA83028528400913A58 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8CA22FAF3028528400913A58;
+			remoteInfo = FloralMD;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		51A10015303A000000000001 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				51A10003303A000000000001 /* FloralMDQuickLook.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000DF /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5AA11F7D00000000000000EC /* FloralMDQuickLook-Harness.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		51A10004303A000000000001 /* FloralMDQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FloralMDQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AA11F7D00000000000000E2 /* FloralMDQuickLook-Harness.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FloralMDQuickLook-Harness.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		51A10006303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMDQuickLook/PreviewProvider.swift; sourceTree = SOURCE_ROOT; };
+		51A10008303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMD/MarkdownRendering/MarkdownHTML.swift; sourceTree = SOURCE_ROOT; };
+		51A1000A303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift; sourceTree = SOURCE_ROOT; };
+		51A1000C303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMD/MarkdownRendering/MarkdownFrontmatter.swift; sourceTree = SOURCE_ROOT; };
+		51A1000E303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMD/MarkdownRendering/MarkdownTypography.swift; sourceTree = SOURCE_ROOT; };
+		51A10010303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloralMD/MarkdownRendering/CodeFenceInfo.swift; sourceTree = SOURCE_ROOT; };
+		51A10012303A000000000001 /* FloralMD/Vendor */ = {isa = PBXFileReference; lastKnownFileType = folder; path = FloralMD/Vendor; sourceTree = SOURCE_ROOT; };
+		51A10016303A000000000001 /* FloralMDQuickLook/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = FloralMDQuickLook/Info.plist; sourceTree = SOURCE_ROOT; };
+		51A10017303A000000000001 /* FloralMDQuickLook/FloralMDQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FloralMDQuickLook/FloralMDQuickLook.entitlements; sourceTree = SOURCE_ROOT; };
+		8CA22FB03028528400913A58 /* FloralMD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloralMD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AA11F7D00000000000000D2 /* FloralMD-Harness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloralMD-Harness.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8CA22FBD3028528500913A58 /* FloralMDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloralMDTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8CA22FC73028528500913A58 /* FloralMDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloralMDUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8CA22FFE3028FBD100913A58 /* FloralMD.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FloralMD.xctestplan; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8CA22FB23028528400913A58 /* FloralMD */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5AA11F7D00000000000000C1 /* Exceptions for pure-editor FloralMD target */,
+			);
+			path = FloralMD;
+			sourceTree = "<group>";
+		};
+		5AA11F7D00000000000000C1 /* Exceptions for pure-editor FloralMD target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DSHServiceKit/DSHService.swift,
+				DSHServiceKit/DSHVersionResolver.swift,
+				DSHServiceKit/FullHarnessAdapter.swift,
+				DSHServiceKit/HarnessExternalLinkPolicy.swift,
+				DSHServiceKit/HarnessNotify.swift,
+				DSHServiceKit/HarnessPluginManager.swift,
+				DSHServiceKit/HarnessSettings.swift,
+				DSHServiceKit/HarnessSurfaceView.swift,
+				HarnessPlugins,
+			);
+			target = 8CA22FAF3028528400913A58 /* FloralMD */;
+		};
+		8CA22FC03028528500913A58 /* FloralMDTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5AA11F7D00000000000000C2 /* Exceptions for pure-editor FloralMDTests target */,
+			);
+			path = FloralMDTests;
+			sourceTree = "<group>";
+		};
+		5AA11F7D00000000000000C2 /* Exceptions for pure-editor FloralMDTests target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DSHVersionResolverTests.swift,
+				HarnessExternalLinkPolicyTests.swift,
+				HarnessPluginManagerTests.swift,
+				ProcessTreeTests.swift,
+			);
+			target = 8CA22FBC3028528500913A58 /* FloralMDTests */;
+		};
+		8CA22FCA3028528500913A58 /* FloralMDUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FloralMDUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		51A10018303A000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				51A10001303A000000000001 /* Markdown in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FAD3028528400913A58 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CA230013028528400913A58 /* Markdown in Frameworks */,
+				9F100001303A000000000001 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FBA3028528500913A58 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FC43028528500913A58 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000D4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AA11F7D00000000000000DE /* Markdown in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AA11F7D00000000000000E9 /* Markdown in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		51A10019303A000000000001 /* FloralMDQuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				51A10006303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift */,
+				51A10016303A000000000001 /* FloralMDQuickLook/Info.plist */,
+				51A10017303A000000000001 /* FloralMDQuickLook/FloralMDQuickLook.entitlements */,
+				51A10008303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift */,
+				51A1000A303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift */,
+				51A1000C303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift */,
+				51A1000E303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift */,
+				51A10010303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift */,
+				51A10012303A000000000001 /* FloralMD/Vendor */,
+			);
+			name = FloralMDQuickLook;
+			sourceTree = "<group>";
+		};
+		8CA22FA73028528400913A58 = {
+			isa = PBXGroup;
+			children = (
+				8CA22FFE3028FBD100913A58 /* FloralMD.xctestplan */,
+				8CA22FB23028528400913A58 /* FloralMD */,
+				8CA22FC03028528500913A58 /* FloralMDTests */,
+				8CA22FCA3028528500913A58 /* FloralMDUITests */,
+				51A10019303A000000000001 /* FloralMDQuickLook */,
+				8CA22FB13028528400913A58 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8CA22FB13028528400913A58 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8CA22FB03028528400913A58 /* FloralMD.app */,
+				5AA11F7D00000000000000D2 /* FloralMD-Harness.app */,
+				8CA22FBD3028528500913A58 /* FloralMDTests.xctest */,
+				8CA22FC73028528500913A58 /* FloralMDUITests.xctest */,
+				51A10004303A000000000001 /* FloralMDQuickLook.appex */,
+				5AA11F7D00000000000000E2 /* FloralMDQuickLook-Harness.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		51A10014303A000000000001 /* FloralMDQuickLook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 51A1001B303A000000000001 /* Build configuration list for PBXNativeTarget "FloralMDQuickLook" */;
+			buildPhases = (
+				51A1001C303A000000000001 /* Sources */,
+				51A10018303A000000000001 /* Frameworks */,
+				51A1001D303A000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FloralMDQuickLook;
+			packageProductDependencies = (
+				51A10002303A000000000001 /* Markdown */,
+			);
+			productName = FloralMDQuickLook;
+			productReference = 51A10004303A000000000001 /* FloralMDQuickLook.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		8CA22FAF3028528400913A58 /* FloralMD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8CA22FD13028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMD" */;
+			buildPhases = (
+				8CA22FAC3028528400913A58 /* Sources */,
+				8CA22FAD3028528400913A58 /* Frameworks */,
+				8CA22FAE3028528400913A58 /* Resources */,
+				51A10015303A000000000001 /* Embed App Extensions */,
+				5AA11F7D00000000000000A2 /* Verify app identity */,
+				5AA11F7D00000000000000A3 /* Install to /Applications (Debug) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				51A1001A303A000000000001 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8CA22FB23028528400913A58 /* FloralMD */,
+			);
+			name = FloralMD;
+			packageProductDependencies = (
+				8CA230023028528400913A58 /* Markdown */,
+				9F100002303A000000000001 /* Sparkle */,
+			);
+			productName = FloralMD;
+			productReference = 8CA22FB03028528400913A58 /* FloralMD.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5AA11F7D00000000000000D1 /* FloralMD-Harness */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AA11F7D00000000000000D9 /* Build configuration list for PBXNativeTarget "FloralMD-Harness" */;
+			buildPhases = (
+				5AA11F7D00000000000000D3 /* Sources */,
+				5AA11F7D00000000000000D4 /* Frameworks */,
+				5AA11F7D00000000000000D5 /* Resources */,
+				5AA11F7D00000000000000D6 /* Copy dsh plugins into Resources */,
+				5AA11F7D00000000000000DF /* Embed App Extensions */,
+				5AA11F7D00000000000000D7 /* Verify app identity */,
+				5AA11F7D00000000000000D8 /* Install to /Applications (Debug) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5AA11F7D00000000000000DC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8CA22FB23028528400913A58 /* FloralMD */,
+			);
+			name = FloralMD-Harness;
+			packageProductDependencies = (
+				8CA230023028528400913A58 /* Markdown */,
+			);
+			productName = FloralMD-Harness;
+			productReference = 5AA11F7D00000000000000D2 /* FloralMD-Harness.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8CA22FBC3028528500913A58 /* FloralMDTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8CA22FD43028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMDTests" */;
+			buildPhases = (
+				8CA22FB93028528500913A58 /* Sources */,
+				8CA22FBA3028528500913A58 /* Frameworks */,
+				8CA22FBB3028528500913A58 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8CA22FBF3028528500913A58 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8CA22FC03028528500913A58 /* FloralMDTests */,
+			);
+			name = FloralMDTests;
+			packageProductDependencies = (
+			);
+			productName = FloralMDTests;
+			productReference = 8CA22FBD3028528500913A58 /* FloralMDTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8CA22FC63028528500913A58 /* FloralMDUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8CA22FD73028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMDUITests" */;
+			buildPhases = (
+				8CA22FC33028528500913A58 /* Sources */,
+				8CA22FC43028528500913A58 /* Frameworks */,
+				8CA22FC53028528500913A58 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8CA22FC93028528500913A58 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8CA22FCA3028528500913A58 /* FloralMDUITests */,
+			);
+			name = FloralMDUITests;
+			packageProductDependencies = (
+			);
+			productName = FloralMDUITests;
+			productReference = 8CA22FC73028528500913A58 /* FloralMDUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		5AA11F7D00000000000000E1 /* FloralMDQuickLook-Harness */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AA11F7D00000000000000E6 /* Build configuration list for PBXNativeTarget "FloralMDQuickLook-Harness" */;
+			buildPhases = (
+				5AA11F7D00000000000000E3 /* Sources */,
+				5AA11F7D00000000000000E4 /* Frameworks */,
+				5AA11F7D00000000000000E5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FloralMDQuickLook-Harness;
+			packageProductDependencies = (
+				51A10002303A000000000001 /* Markdown */,
+			);
+			productName = FloralMDQuickLook-Harness;
+			productReference = 5AA11F7D00000000000000E2 /* FloralMDQuickLook-Harness.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8CA22FA83028528400913A58 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					51A10014303A000000000001 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					5AA11F7D00000000000000E1 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					8CA22FAF3028528400913A58 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					5AA11F7D00000000000000D1 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					8CA22FBC3028528500913A58 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = 8CA22FAF3028528400913A58;
+					};
+					8CA22FC63028528500913A58 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = 8CA22FAF3028528400913A58;
+					};
+				};
+			};
+			buildConfigurationList = 8CA22FAB3028528400913A58 /* Build configuration list for PBXProject "FloralMD" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 8CA22FA73028528400913A58;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8CA230033028528400913A58 /* XCRemoteSwiftPackageReference "swift-markdown" */,
+				9F100003303A000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8CA22FB13028528400913A58 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8CA22FAF3028528400913A58 /* FloralMD */,
+				5AA11F7D00000000000000D1 /* FloralMD-Harness */,
+				8CA22FBC3028528500913A58 /* FloralMDTests */,
+				8CA22FC63028528500913A58 /* FloralMDUITests */,
+				51A10014303A000000000001 /* FloralMDQuickLook */,
+				5AA11F7D00000000000000E1 /* FloralMDQuickLook-Harness */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		51A1001D303A000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				51A10011303A000000000001 /* FloralMD/Vendor in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FAE3028528400913A58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FBB3028528500913A58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FC53028528500913A58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000D5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000E5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AA11F7D00000000000000F3 /* FloralMD/Vendor in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		51A1001C303A000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				51A10005303A000000000001 /* FloralMDQuickLook/PreviewProvider.swift in Sources */,
+				51A10007303A000000000001 /* FloralMD/MarkdownRendering/MarkdownHTML.swift in Sources */,
+				51A10009303A000000000001 /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift in Sources */,
+				51A1000B303A000000000001 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift in Sources */,
+				51A1000D303A000000000001 /* FloralMD/MarkdownRendering/MarkdownTypography.swift in Sources */,
+				51A1000F303A000000000001 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FAC3028528400913A58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FB93028528500913A58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8CA22FC33028528500913A58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5AA11F7D00000000000000E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AA11F7D00000000000000ED /* FloralMDQuickLook/PreviewProvider.swift in Sources */,
+				5AA11F7D00000000000000EE /* FloralMD/MarkdownRendering/MarkdownHTML.swift in Sources */,
+				5AA11F7D00000000000000EF /* FloralMD/MarkdownRendering/EscapingHTMLFormatter.swift in Sources */,
+				5AA11F7D00000000000000F0 /* FloralMD/MarkdownRendering/MarkdownFrontmatter.swift in Sources */,
+				5AA11F7D00000000000000F1 /* FloralMD/MarkdownRendering/MarkdownTypography.swift in Sources */,
+				5AA11F7D00000000000000F2 /* FloralMD/MarkdownRendering/CodeFenceInfo.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5AA11F7D00000000000000A2 /* Verify app identity */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Verify app identity";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Fail the build if the product identity does not match the configuration:\n# Debug must be a .dev identity, Release the shipped identity. This guards\n# against accidentally archiving a dev build (or running a release identity\n# in development) — the two identities are deliberately isolated.\nset -e\ncase \"$TARGET_NAME\" in\n  \"FloralMD-Harness\")\n    EXPECTED_ID=\"com.yingkaisun.floralmd.harness\"\n    EXPECTED_SCHEME=\"floralmd-harness\"\n    EXPECTED_NAME=\"FloralMD Harness\"\n    case \"$CONFIGURATION\" in\n      Debug)\n        EXPECTED_ID=\"com.yingkaisun.floralmd.harness.dev\"\n        EXPECTED_SCHEME=\"floralmd-harness-dev\"\n        EXPECTED_NAME=\"FloralMD Harness Dev\"\n        ;;\n    esac\n    ;;\n  *)\n    EXPECTED_ID=\"com.yingkaisun.floralmd\"\n    EXPECTED_SCHEME=\"\"\n    EXPECTED_NAME=\"FloralMD\"\n    case \"$CONFIGURATION\" in\n      Debug)\n        EXPECTED_ID=\"com.yingkaisun.floralmd.dev\"\n        EXPECTED_NAME=\"FloralMD Dev\"\n        ;;\n    esac\n    ;;\nesac\nINFO=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nACTUAL_ID=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleIdentifier\" \"$INFO\" 2>/dev/null || true)\nACTUAL_NAME=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleDisplayName\" \"$INFO\" 2>/dev/null || true)\nif [ \"$ACTUAL_ID\" != \"$EXPECTED_ID\" ] || [ \"$ACTUAL_NAME\" != \"$EXPECTED_NAME\" ]; then\n  echo \"error: 身份校验失败 ($CONFIGURATION/$TARGET_NAME): bundle id=$ACTUAL_ID (期望 $EXPECTED_ID), name=$ACTUAL_NAME (期望 $EXPECTED_NAME)\"\n  exit 1\nfi\nif [ -n \"$EXPECTED_SCHEME\" ]; then\n  ACTUAL_SCHEME=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleURLTypes:0:CFBundleURLSchemes:0\" \"$INFO\" 2>/dev/null || true)\n  if [ \"$ACTUAL_SCHEME\" != \"$EXPECTED_SCHEME\" ]; then\n    echo \"error: 身份校验失败 ($CONFIGURATION/$TARGET_NAME): scheme=$ACTUAL_SCHEME (期望 $EXPECTED_SCHEME)\"\n    exit 1\n  fi\nfi\necho \"身份校验通过: $CONFIGURATION ($TARGET_NAME) → $ACTUAL_ID / $ACTUAL_NAME\"\n";
+		};
+		5AA11F7D00000000000000A3 /* Install to /Applications (Debug) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(WRAPPER_NAME)",
+			);
+			name = "Install to /Applications (Debug)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"/Applications/FloralMD-Dev.app",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Debug 专用：⌘R 构建完成后自动安装到 /Applications/FloralMD-Dev.app，\n# 让“尝新版”常驻系统（Spotlight/Dock/聚焦均可启动）；Release/Archive 不触发。\n# 注意：build phase 在 Xcode 签名之前运行，复制到 /Applications 的是未签名\n# 产物，launchd 会拒绝启动 —— 复制后必须 adhoc 重签（含嵌入的 QuickLook 扩展）。\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  exit 0\nfi\n# 测试构建会在 app 内注入 PlugIns/FloralMDTests.xctest（测试宿主机制），\n# 这种产物不应安装到 /Applications，且 adhoc 重签无法处理其中的测试 bundle。\nif [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Contents/PlugIns/FloralMDTests.xctest\" ]; then\n  exit 0\nfi\nset -e\nDST=\"/Applications/FloralMD-Dev.app\"\nrm -rf \"$DST\"\ncp -R \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" \"$DST\"\ncodesign --force --deep --sign - \"$DST\" 2>/dev/null || codesign --force --sign - \"$DST\"\nxattr -dr com.apple.quarantine \"$DST\" 2>/dev/null || true\necho \"已安装并重签: $DST\"\n";
+		};
+		5AA11F7D00000000000000D6 /* Copy dsh plugins into Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/FloralMD/HarnessPlugins",
+			);
+			name = "Copy dsh plugins into Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/HarnessPlugins",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# fileSystemSynchronizedGroups does not copy directories containing package.json;\n# copy the whole HarnessPlugins tree (dsh-notify cordis plugin, dsh-editor-path\n# front-end script, …) so the host can inject them at runtime.\nset -e\nPLUGIN_SRC=\"${SRCROOT}/FloralMD/HarnessPlugins\"\nPLUGIN_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/HarnessPlugins\"\nrm -rf \"${PLUGIN_DST}\"\nmkdir -p \"${PLUGIN_DST}\"\ncp -R \"${PLUGIN_SRC}/.\" \"${PLUGIN_DST}/\"\n";
+		};
+		5AA11F7D00000000000000D7 /* Verify app identity */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Verify app identity";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Fail the build if the product identity does not match the configuration:\n# Debug must be a .dev identity, Release the shipped identity. This guards\n# against accidentally archiving a dev build (or running a release identity\n# in development) — the two identities are deliberately isolated.\nset -e\ncase \"$TARGET_NAME\" in\n  \"FloralMD-Harness\")\n    EXPECTED_ID=\"com.yingkaisun.floralmd.harness\"\n    EXPECTED_SCHEME=\"floralmd-harness\"\n    EXPECTED_NAME=\"FloralMD Harness\"\n    case \"$CONFIGURATION\" in\n      Debug)\n        EXPECTED_ID=\"com.yingkaisun.floralmd.harness.dev\"\n        EXPECTED_SCHEME=\"floralmd-harness-dev\"\n        EXPECTED_NAME=\"FloralMD Harness Dev\"\n        ;;\n    esac\n    ;;\n  *)\n    EXPECTED_ID=\"com.yingkaisun.floralmd\"\n    EXPECTED_SCHEME=\"\"\n    EXPECTED_NAME=\"FloralMD\"\n    case \"$CONFIGURATION\" in\n      Debug)\n        EXPECTED_ID=\"com.yingkaisun.floralmd.dev\"\n        EXPECTED_NAME=\"FloralMD Dev\"\n        ;;\n    esac\n    ;;\nesac\nINFO=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nACTUAL_ID=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleIdentifier\" \"$INFO\" 2>/dev/null || true)\nACTUAL_NAME=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleDisplayName\" \"$INFO\" 2>/dev/null || true)\nif [ \"$ACTUAL_ID\" != \"$EXPECTED_ID\" ] || [ \"$ACTUAL_NAME\" != \"$EXPECTED_NAME\" ]; then\n  echo \"error: 身份校验失败 ($CONFIGURATION/$TARGET_NAME): bundle id=$ACTUAL_ID (期望 $EXPECTED_ID), name=$ACTUAL_NAME (期望 $EXPECTED_NAME)\"\n  exit 1\nfi\nif [ -n \"$EXPECTED_SCHEME\" ]; then\n  ACTUAL_SCHEME=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleURLTypes:0:CFBundleURLSchemes:0\" \"$INFO\" 2>/dev/null || true)\n  if [ \"$ACTUAL_SCHEME\" != \"$EXPECTED_SCHEME\" ]; then\n    echo \"error: 身份校验失败 ($CONFIGURATION/$TARGET_NAME): scheme=$ACTUAL_SCHEME (期望 $EXPECTED_SCHEME)\"\n    exit 1\n  fi\nfi\necho \"身份校验通过: $CONFIGURATION ($TARGET_NAME) → $ACTUAL_ID / $ACTUAL_NAME\"\n";
+		};
+		5AA11F7D00000000000000D8 /* Install to /Applications (Debug) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(WRAPPER_NAME)",
+			);
+			name = "Install to /Applications (Debug)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"/Applications/FloralMD-Harness.app",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Debug 专用：⌘R 构建完成后自动安装到 /Applications/FloralMD-Harness.app，\n# 让“尝新版”常驻系统（Spotlight/Dock/聚焦均可启动）；Release/Archive 不触发。\n# 注意：build phase 在 Xcode 签名之前运行，复制到 /Applications 的是未签名\n# 产物，launchd 会拒绝启动 —— 复制后必须 adhoc 重签（含嵌入的 QuickLook 扩展）。\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  exit 0\nfi\n# 测试构建会在 app 内注入 PlugIns/FloralMDTests.xctest（测试宿主机制），\n# 这种产物不应安装到 /Applications，且 adhoc 重签无法处理其中的测试 bundle。\nif [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Contents/PlugIns/FloralMDTests.xctest\" ]; then\n  exit 0\nfi\nset -e\nDST=\"/Applications/FloralMD-Harness.app\"\nrm -rf \"$DST\"\ncp -R \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" \"$DST\"\ncodesign --force --deep --sign - \"$DST\" 2>/dev/null || codesign --force --sign - \"$DST\"\nxattr -dr com.apple.quarantine \"$DST\" 2>/dev/null || true\necho \"已安装并重签: $DST\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		51A1001A303A000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 51A10014303A000000000001 /* FloralMDQuickLook */;
+			targetProxy = 51A10013303A000000000001 /* PBXContainerItemProxy */;
+		};
+		5AA11F7D00000000000000DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5AA11F7D00000000000000E1 /* FloralMDQuickLook-Harness */;
+			targetProxy = 5AA11F7D00000000000000EA /* PBXContainerItemProxy */;
+		};
+		5AA11F7D00000000000000EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CA22FA83028528400913A58 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5AA11F7D00000000000000E1;
+			remoteInfo = FloralMDQuickLook-Harness;
+		};
+		8CA22FBF3028528500913A58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8CA22FAF3028528400913A58 /* FloralMD */;
+			targetProxy = 8CA22FBE3028528500913A58 /* PBXContainerItemProxy */;
+		};
+		8CA22FC93028528500913A58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8CA22FAF3028528400913A58 /* FloralMD */;
+			targetProxy = 8CA22FC83028528500913A58 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		51A1001E303A000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2026.9.2;
+				/* Must stay prefixed by the parent app's id: Debug parent = *.dev. */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.dev.quicklook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		51A1001F303A000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2026.9.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.quicklook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		5AA11F7D00000000000000E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2026.9.2;
+				/* Must stay prefixed by the harness parent app's id (Debug = *.harness.dev). */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness.dev.quicklook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5AA11F7D00000000000000E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = FloralMDQuickLook/FloralMDQuickLook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FloralMDQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 2026.9.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness.quicklook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8CA22FCF3028528500913A58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8CA22FD03028528500913A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		8CA22FD23028528500913A58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = FloralMD;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_APP_SANDBOX = NO;
+				/* 纯编辑器主产品直接访问用户选择的磁盘目录；安装/校验脚本
+				   仍需写 /Applications 与读产物，保持用户脚本沙盒关闭。 */
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "FloralMD-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2026.9.2;
+				/* Dev identity: separate bundle id/scheme/display name so the
+				   Debug build never collides with the released app (notifications,
+				   URL scheme routing, and UserDefaults stay isolated). The name
+				   flows into the custom Info.plist via FLORALMD_DISPLAY_NAME
+				   (INFOPLIST_KEY_* are ignored with GENERATE_INFOPLIST_FILE=NO). */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.dev;
+				FLORALMD_DISPLAY_NAME = "FloralMD Dev";
+				FLORALMD_SPARKLE_FEED_URL = "";
+				FLORALMD_SPARKLE_PUBLIC_KEY = "";
+				FLORALMD_URL_SCHEME = floralmd-dev;
+				/* 文件名/进程名用连字符（命令行友好）；显示名走 FLORALMD_DISPLAY_NAME 空格。 */
+				PRODUCT_NAME = "FloralMD-Dev";
+				/* 测试目标以 `@testable import FloralMD` 编译；产品名连字符会派生
+				   出 FloralMD_Dev 模块名，这里钉死为 FloralMD。 */
+				PRODUCT_MODULE_NAME = FloralMD;
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8CA22FD33028528500913A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = FloralMD;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_APP_SANDBOX = NO;
+				/* 纯编辑器主产品直接访问用户选择的磁盘目录；安装/校验脚本
+				   仍需写 /Applications 与读产物，保持用户脚本沙盒关闭。 */
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "FloralMD-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2026.9.2;
+				/* Release identity: the shipped bundle id/scheme/display name. */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd;
+				FLORALMD_DISPLAY_NAME = FloralMD;
+				FLORALMD_SPARKLE_FEED_URL = "https://raw.githubusercontent.com/yingkaisun-kai/floralmd/feed/appcast.xml";
+				FLORALMD_SPARKLE_PUBLIC_KEY = "0pfPJUj18rY/4rs3kZzunLn5bEm/Lv+CwrAZcrzuwpQ=";
+				FLORALMD_URL_SCHEME = floralmd;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) FLORALMD_PRODUCTION";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		5AA11F7D00000000000000DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = FloralMD;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_APP_SANDBOX = NO;
+				/* Harness 形态：不沙盒（内嵌 dsh 需要 localhost 服务/进程托管），
+				   插件拷贝与安装脚本都需要完整文件系统访问。 */
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "FloralMD-Harness-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2026.9.2;
+				/* Dev identity: separate bundle id/scheme/display name so the
+				   Debug build never collides with the released app (notifications,
+				   URL scheme routing, and UserDefaults stay isolated). The name
+				   flows into the custom Info.plist via FLORALMD_DISPLAY_NAME
+				   (INFOPLIST_KEY_* are ignored with GENERATE_INFOPLIST_FILE=NO). */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness.dev;
+				FLORALMD_DISPLAY_NAME = "FloralMD Harness Dev";
+				FLORALMD_URL_SCHEME = floralmd-harness-dev;
+				/* 文件名/进程名用连字符（命令行友好）；显示名走 FLORALMD_DISPLAY_NAME 空格。 */
+				PRODUCT_NAME = "FloralMD-Harness-Dev";
+				/* 测试目标以 `@testable import FloralMD` 编译；产品名连字符会派生
+				   出 FloralMD_Dev 模块名，这里钉死为 FloralMD。 */
+				PRODUCT_MODULE_NAME = FloralMD;
+				OTHER_SWIFT_FLAGS = "-DHARNESS_FULL";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5AA11F7D00000000000000DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = FloralMD;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 22;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				ENABLE_APP_SANDBOX = NO;
+				/* Harness 形态：不沙盒（内嵌 dsh 需要 localhost 服务/进程托管）。 */
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "FloralMD-Harness-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 2026.9.2;
+				/* Release identity: the shipped bundle id/scheme/display name. */
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.harness;
+				FLORALMD_DISPLAY_NAME = "FloralMD Harness";
+				FLORALMD_URL_SCHEME = floralmd-harness;
+				PRODUCT_NAME = "FloralMD-Harness";
+				OTHER_SWIFT_FLAGS = "-DHARNESS_FULL";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8CA22FD53028528500913A58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FloralMD-Dev.app/Contents/MacOS/FloralMD-Dev";
+			};
+			name = Debug;
+		};
+		8CA22FD63028528500913A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FloralMD.app/Contents/MacOS/FloralMD";
+			};
+			name = Release;
+		};
+		8CA22FD83028528500913A58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = FloralMD;
+			};
+			name = Debug;
+		};
+		8CA22FD93028528500913A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XBA825KHJZ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yingkaisun.floralmd.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = FloralMD;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5AA11F7D00000000000000E6 /* Build configuration list for PBXNativeTarget "FloralMDQuickLook-Harness" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AA11F7D00000000000000E7 /* Debug */,
+				5AA11F7D00000000000000E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		51A1001B303A000000000001 /* Build configuration list for PBXNativeTarget "FloralMDQuickLook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51A1001E303A000000000001 /* Debug */,
+				51A1001F303A000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8CA22FAB3028528400913A58 /* Build configuration list for PBXProject "FloralMD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CA22FCF3028528500913A58 /* Debug */,
+				8CA22FD03028528500913A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8CA22FD13028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CA22FD23028528500913A58 /* Debug */,
+				8CA22FD33028528500913A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5AA11F7D00000000000000D9 /* Build configuration list for PBXNativeTarget "FloralMD-Harness" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AA11F7D00000000000000DA /* Debug */,
+				5AA11F7D00000000000000DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8CA22FD43028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMDTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CA22FD53028528500913A58 /* Debug */,
+				8CA22FD63028528500913A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8CA22FD73028528500913A58 /* Build configuration list for PBXNativeTarget "FloralMDUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CA22FD83028528500913A58 /* Debug */,
+				8CA22FD93028528500913A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8CA230033028528400913A58 /* XCRemoteSwiftPackageReference "swift-markdown" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftlang/swift-markdown.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.3;
+			};
+		};
+		9F100003303A000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		51A10002303A000000000001 /* Markdown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8CA230033028528400913A58 /* XCRemoteSwiftPackageReference "swift-markdown" */;
+			productName = Markdown;
+		};
+		8CA230023028528400913A58 /* Markdown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8CA230033028528400913A58 /* XCRemoteSwiftPackageReference "swift-markdown" */;
+			productName = Markdown;
+		};
+		9F100002303A000000000001 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F100003303A000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8CA22FA83028528400913A58 /* Project object */;
+}

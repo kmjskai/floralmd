@@ -1,0 +1,16 @@
+Package: @excalidraw/excalidraw
+Version: 0.18.1
+License: MIT
+Upstream: https://github.com/excalidraw/excalidraw
+Release commit: a2ec288
+Package: https://registry.npmjs.org/@excalidraw/excalidraw/-/excalidraw-0.18.1.tgz
+Integrity: sha512-6i5Gt7IDTOH//qa0Z315Ly5iVRhjWpu2whrlQFqkuwrkKUWgRsMk0P5qdE7bpyDpai7jeLeWYkyj1eVAfni1lw==
+Bundled host: React 19.1.1 and React DOM 19.1.1 (MIT)
+Build tool: Vite 8.2.1 (not shipped as a runtime dependency)
+Maintained source: scripts/excalidraw-bundle
+Rebuild command: npm ci && npm test && npm run build
+
+The JavaScript, CSS, locale chunks, and fonts in this directory are bundled
+for FloralMD and loaded from the application bundle. Runtime network access
+is not required. The build installs Excalidraw's complete upstream font tree
+because those runtime asset URLs are not discovered by Vite automatically.
