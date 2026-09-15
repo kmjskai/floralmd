@@ -131,6 +131,12 @@ jobs:
         with:
           subject-path: build/FloralMD-${{ env.VERSION }}.dmg
 
+      - name: Attest app ZIP provenance
+        if: env.RELEASE_EXISTS != 'true'
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4
+        with:
+          subject-path: build/FloralMD-${{ env.VERSION }}.zip
+
       - name: Prepare Pre-release notes
         if: env.RELEASE_EXISTS != 'true'
         run: |
@@ -144,6 +150,7 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             "build/FloralMD-${VERSION}.dmg" \
+            "build/FloralMD-${VERSION}.zip" \
             "build/FloralMD-${VERSION}.sha256" \
             "build/FloralMD-${VERSION}.sparkle-signature.txt" \
             --verify-tag \

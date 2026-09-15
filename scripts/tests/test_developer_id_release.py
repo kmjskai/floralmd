@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 
@@ -77,6 +78,11 @@ class PromotionValidationTests(unittest.TestCase):
         dmg = directory / dmg_name
         dmg.write_bytes(b"immutable notarized dmg fixture")
         digest = hashlib.sha256(dmg.read_bytes()).hexdigest()
+        zip_name = f"FloralMD-{self.version}.zip"
+        app_zip = directory / zip_name
+        with zipfile.ZipFile(app_zip, "w") as archive:
+            archive.writestr("FloralMD.app/Contents/Info.plist", b"fixture")
+        zip_digest = hashlib.sha256(app_zip.read_bytes()).hexdigest()
         (directory / f"FloralMD-{self.version}.sha256").write_text(
             f"{digest}  {dmg_name}\n", encoding="utf-8"
         )
@@ -94,6 +100,7 @@ class PromotionValidationTests(unittest.TestCase):
             "prerelease": True,
             "assets": [
                 {"name": dmg_name, "digest": f"sha256:{digest}"},
+                {"name": zip_name, "digest": f"sha256:{zip_digest}"},
                 {"name": f"FloralMD-{self.version}.sha256", "digest": "sha256:x"},
                 {
                     "name": f"FloralMD-{self.version}.sparkle-signature.txt",
@@ -189,6 +196,17 @@ class PromotionValidationTests(unittest.TestCase):
             assert isinstance(assets, list)
             assets[0]["digest"] = f"sha256:{'f' * 64}"
             with self.assertRaisesRegex(ValueError, "GitHub asset digest"):
+                promotion.validate_files(
+                    release, directory=directory, version=self.version
+                )
+
+    def test_rejects_zip_without_app_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            release, _, _ = self.make_assets(directory)
+            with zipfile.ZipFile(directory / f"FloralMD-{self.version}.zip", "w") as archive:
+                archive.writestr("wrong.txt", b"not an app")
+            with self.assertRaisesRegex(ValueError, "does not contain FloralMD.app"):
                 promotion.validate_files(
                     release, directory=directory, version=self.version
                 )
@@ -438,6 +456,7 @@ class DeveloperIDWorkflowTests(unittest.TestCase):
         self.assertIn("- 'v*'", workflow)
         self.assertNotIn("preview-v", workflow)
         self.assertIn("--prerelease", workflow)
+        self.assertIn('"build/FloralMD-${VERSION}.zip"', workflow)
         self.assertNotIn("update-appcast.py", workflow)
         self.assertNotIn("HEAD:feed", workflow)
         self.assertNotIn("ref: feed", workflow)
@@ -473,6 +492,7 @@ class DeveloperIDWorkflowTests(unittest.TestCase):
         self.assertIn("environment: production", workflow)
         self.assertIn('"PROMOTE"', workflow)
         self.assertIn("gh release download", workflow)
+        self.assertIn('promotion/FloralMD-${VERSION}.zip', workflow)
         self.assertIn("-F prerelease=false", workflow)
         self.assertIn("update-appcast.py", workflow)
         self.assertNotIn("developer-id-release.sh", workflow)

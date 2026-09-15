@@ -36,7 +36,7 @@ FloralMD 是一款原生 macOS、本地文件优先的 Markdown 工作区编辑�
 
 ## 下载与快速开始
 
-从 [最新正式版](https://github.com/yingkaisun-kai/floralmd/releases/latest) 下载 `FloralMD-<版本>.dmg`，打开后将 `FloralMD.app` 拖入“应用程序”，再从“应用程序”启动。正式安装包使用 Developer ID 签名并经过 Apple 公证。
+从 [最新正式版](https://github.com/yingkaisun-kai/floralmd/releases/latest) 下载 `FloralMD-<版本>.dmg`，打开后将 `FloralMD.app` 拖入“应用程序”，再从“应用程序”启动。正式安装包使用 Developer ID 签名并经过 Apple 公证。如果公司网络禁止下载 DMG，也可以下载同版本的 `FloralMD-<版本>.zip`，解压后将其中的 `FloralMD.app` 移入“应用程序”。
 
 1. 选择默认 Draft 文件夹、明确打开一个工作区，或从 Finder 打开单个文件。
 2. 在 Files 侧栏中打开 Markdown、Excalidraw 绘图或图片。

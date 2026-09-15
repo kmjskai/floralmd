@@ -36,7 +36,7 @@ Its workflow stays deliberately lightweight: open a folder, browse real resource
 
 ## Download and quick start
 
-Download `FloralMD-<version>.dmg` from the [latest stable release](https://github.com/yingkaisun-kai/floralmd/releases/latest), open it, and drag `FloralMD.app` into Applications. Official installers are Developer ID signed and notarized by Apple.
+Download `FloralMD-<version>.dmg` from the [latest stable release](https://github.com/yingkaisun-kai/floralmd/releases/latest), open it, and drag `FloralMD.app` into Applications. Official installers are Developer ID signed and notarized by Apple. If your company blocks DMG downloads, download the matching `FloralMD-<version>.zip`, extract it, and move the included `FloralMD.app` into Applications.
 
 1. Choose the default Draft folder, explicitly open a workspace, or open an individual file from Finder.
 2. Open Markdown, Excalidraw drawings, or images from Files.

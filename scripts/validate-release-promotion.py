@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 
@@ -27,6 +28,7 @@ def asset_names(version: str) -> set[str]:
         raise ValueError(f"{version!r} is not FloralMD CalVer")
     return {
         f"FloralMD-{version}.dmg",
+        f"FloralMD-{version}.zip",
         f"FloralMD-{version}.sha256",
         f"FloralMD-{version}.sparkle-signature.txt",
     }
@@ -109,12 +111,24 @@ def validate_files(
     version: str,
 ) -> tuple[str, int, str]:
     dmg_name = f"FloralMD-{version}.dmg"
+    zip_name = f"FloralMD-{version}.zip"
     dmg = directory / dmg_name
+    app_zip = directory / zip_name
     checksum = directory / f"FloralMD-{version}.sha256"
     signature_file = directory / f"FloralMD-{version}.sparkle-signature.txt"
-    for path in (dmg, checksum, signature_file):
+    for path in (dmg, app_zip, checksum, signature_file):
         if not path.is_file():
             raise ValueError(f"release asset is missing: {path.name}")
+
+    try:
+        with zipfile.ZipFile(app_zip) as archive:
+            names = archive.namelist()
+            if not any(name.startswith("FloralMD.app/") for name in names):
+                raise ValueError("app ZIP does not contain FloralMD.app")
+            if any(name.startswith(("/", "../")) or "/../" in name for name in names):
+                raise ValueError("app ZIP contains an unsafe path")
+    except zipfile.BadZipFile as error:
+        raise ValueError("app ZIP is not a valid ZIP archive") from error
 
     digest = hashlib.sha256()
     with dmg.open("rb") as file:
@@ -143,6 +157,14 @@ def validate_files(
     )
     if dmg_asset.get("digest") != f"sha256:{actual_digest}":
         raise ValueError("GitHub asset digest does not match the downloaded DMG")
+    zip_digest = hashlib.sha256(app_zip.read_bytes()).hexdigest()
+    zip_asset = next(
+        asset
+        for asset in assets
+        if isinstance(asset, dict) and asset.get("name") == zip_name
+    )
+    if zip_asset.get("digest") != f"sha256:{zip_digest}":
+        raise ValueError("GitHub asset digest does not match the downloaded app ZIP")
     return signature, signed_length, actual_digest
 
 

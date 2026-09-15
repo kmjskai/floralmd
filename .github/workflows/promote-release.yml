@@ -93,6 +93,9 @@ jobs:
           gh attestation verify \
             "promotion/FloralMD-${VERSION}.dmg" \
             --repo "$GITHUB_REPOSITORY"
+          gh attestation verify \
+            "promotion/FloralMD-${VERSION}.zip" \
+            --repo "$GITHUB_REPOSITORY"
 
       - name: Prepare stable release notes
         run: |

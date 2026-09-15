@@ -133,6 +133,9 @@ notarize "$APP_ZIP" app
 xcrun stapler staple "$APP" >/dev/null
 ./scripts/verify-release-artifact.sh notarized-app "$APP"
 
+RELEASE_ZIP="$(dirname "$DMG")/FloralMD-${VERSION}.zip"
+ditto -c -k --keepParent "$APP" "$RELEASE_ZIP"
+
 ./scripts/create-release-dmg.sh "$APP" "$DMG"
 codesign --force --sign "$IDENTITY" --timestamp "$DMG"
 notarize "$DMG" dmg
