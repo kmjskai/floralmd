@@ -24,6 +24,12 @@ final class LatestFrameValueScheduler<Value> {
         self.apply = apply
     }
 
+    // Swift 6.3 crashes while optimizing the synthesized generic deinit when
+    // targeting older macOS runtimes. Keep this workaround local to teardown.
+    // https://github.com/swiftlang/swift/issues/90385
+    @_optimize(none)
+    deinit {}
+
     func submit(_ value: Value) {
         latestValue = value
         guard !isFramePending else { return }

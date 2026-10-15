@@ -32,12 +32,12 @@ changelog_html = load_script("changelog_html", "changelog-to-html.py")
 class ChangelogTests(unittest.TestCase):
     def test_current_release_is_bilingual_and_renderable(self) -> None:
         lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines(True)
-        notes = changelog_tools.release_notes("2026.10.0", lines)
+        notes = changelog_tools.release_notes("2026.10.1", lines)
         self.assertTrue(notes.startswith("### 中文\n"))
         self.assertLess(notes.index("### 中文"), notes.index("### English"))
         html = changelog_html.to_html(
             changelog_tools.trim_section(
-                changelog_tools.extract_section("2026.10.0", lines)
+                changelog_tools.extract_section("2026.10.1", lines)
             )
         )
         self.assertIn("<h3>中文</h3>", html)
@@ -62,13 +62,13 @@ class ReleaseVersionTests(unittest.TestCase):
             previous_build="21",
         )
 
-    def test_macos14_release_follows_the_last_stable_release(self) -> None:
+    def test_macos14_release_follows_the_failed_build_candidate(self) -> None:
         release_version.validate_release(
-            version="2026.10.0",
-            tag="v2026.10.0",
-            build="23",
-            previous_version="2026.9.2",
-            previous_build="22",
+            version="2026.10.1",
+            tag="v2026.10.1",
+            build="24",
+            previous_version="2026.10.0",
+            previous_build="23",
         )
 
     def test_rejects_skipped_patch_and_reused_build(self) -> None:
@@ -89,9 +89,9 @@ class ReleaseVersionTests(unittest.TestCase):
         )
         versions = set(re.findall(r"MARKETING_VERSION = ([^;]+);", project))
         builds = set(re.findall(r"CURRENT_PROJECT_VERSION = ([^;]+);", project))
-        self.assertIn("2026.10.0", versions)
+        self.assertIn("2026.10.1", versions)
         self.assertNotIn("2026.9.2", versions)
-        self.assertIn("23", builds)
+        self.assertIn("24", builds)
         self.assertNotIn("22", builds)
 
 
