@@ -7,7 +7,7 @@
 <p align="center"><strong>Edit Markdown, Excalidraw drawings, and images directly in a native macOS workspace.</strong></p>
 
 <p align="center">
-  <a href="#requirements-and-permissions"><img src="https://img.shields.io/badge/platform-macOS%2026.5%2B-0064e1?style=flat-square" alt="macOS 26.5+"></a>
+  <a href="#requirements-and-permissions"><img src="https://img.shields.io/badge/platform-macOS%2014.0%2B-0064e1?style=flat-square" alt="macOS 14.0+"></a>
   <a href="https://github.com/yingkaisun-kai/floralmd/releases/latest"><img src="https://img.shields.io/github/v/release/yingkaisun-kai/floralmd?style=flat-square&amp;color=2f7de1" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/yingkaisun-kai/floralmd?style=flat-square&amp;color=772678" alt="License"></a>
   <a href="https://github.com/yingkaisun-kai/floralmd/releases"><img src="https://img.shields.io/github/downloads/yingkaisun-kai/floralmd/total?style=flat-square&amp;color=ff6916" alt="Downloads"></a>
@@ -44,10 +44,12 @@ Download `FloralMD-<version>.dmg` from the [latest stable release](https://githu
 
 ## Requirements and permissions
 
-- macOS 26.5 or later
+- macOS 14.0 or later (compatible interface styling before macOS 26)
 - Apple silicon or Intel Mac
 - FloralMD accesses only files or workspaces you explicitly select
 - The current macOS app is not sandboxed so it can work directly with those ordinary files
+
+macOS 14 support has passed compatibility build checks but has not been tested on a Mac running macOS 14.6.1. Please report any issues through GitHub Issues.
 
 ## Safety, recovery, and uninstall
 

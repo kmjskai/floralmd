@@ -607,7 +607,7 @@ struct DrawingWindowView: View {
             }
         }
         .padding(4)
-        .glassEffect(.regular.interactive(), in: .capsule)
+        .compatibleGlassEffect(in: Capsule())
     }
 
     private var drawingSidebar: some View {
@@ -659,7 +659,7 @@ struct DrawingWindowView: View {
                     selectedDocumentURL: fileSelection.displayedDocumentURL,
                     requestSafeOpen: requestOpenDrawing
                 )
-                .scrollEdgeEffectHidden()
+                .compatibleScrollEdgeEffectHidden()
                 .accessibilityIdentifier("drawingFileList")
             }
 

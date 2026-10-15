@@ -747,7 +747,7 @@ struct FileSidebarView: View {
                 performOperation: performOperation
             )
             .equatable()
-            .scrollEdgeEffectHidden()
+            .compatibleScrollEdgeEffectHidden()
         }
     }
 

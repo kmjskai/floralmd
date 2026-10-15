@@ -11,6 +11,22 @@ first, with `#### 新增` / `#### 变更` / `#### 修复` categories as needed; 
 complete `### English` block follows, using the corresponding Keep a Changelog
 categories. Language is never marked with inline bold labels.
 
+## [2026.10.0] — 2026-10-15
+
+### 中文
+
+#### 变更
+- 最低系统要求降低至 macOS 14.0，继续支持 Apple silicon 与 Intel Mac。
+- macOS 26 及以上保留 Liquid Glass 与滚动边缘效果；较早系统使用兼容界面样式。
+- macOS 14 支持已通过兼容构建检查，尚未在 macOS 14.6.1 实机验证；如遇问题，请通过 GitHub Issues 反馈。
+
+### English
+
+#### Changed
+- Lowered the minimum system requirement to macOS 14.0, retaining support for Apple silicon and Intel Macs.
+- Kept Liquid Glass and scroll-edge effects on macOS 26 and later, with compatible interface styling on earlier systems.
+- macOS 14 support has passed compatibility build checks but has not been tested on a Mac running macOS 14.6.1. Please report any issues through GitHub Issues.
+
 ## [2026.9.2] — 2026-09-08
 
 ### 中文

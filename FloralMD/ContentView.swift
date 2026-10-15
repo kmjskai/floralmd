@@ -168,7 +168,7 @@ struct ContentView: View {
                     .help(windowPinningMode.actionTitle)
                 }
                 .padding(4)
-                .glassEffect(.regular.interactive(), in: .capsule)
+                .compatibleGlassEffect(in: Capsule())
             }
         }
         .alert("无法打开文档", isPresented: $isShowingOpenError) {

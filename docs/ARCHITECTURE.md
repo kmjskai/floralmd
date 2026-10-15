@@ -261,3 +261,9 @@ WorkspaceSidebar 文件行
 - `.excalidraw` 与任意 SVG 在 Files 服务中没有配对身份；所有操作只作用于用户明确选择的单个项目。
 - Files 当前只支持单选；没有批量事务或文件操作撤销。冲突与外部变化通过失败、保留源文件和刷新后的真实目录状态收口。
 - 自动化只验证可重复的模型、文件事务与 Web 组件；Finder、真实剪贴板、窗口生命周期和沙盒授权仍由 [PROGRESS.md](PROGRESS.md) 的人工清单收口。
+
+## 9. 系统版本与视觉兼容
+
+主应用与 Quick Look 的最低部署版本统一为 macOS 14.0。`CompatibleVisualEffects.swift` 统一封装 macOS 26 的视觉 API：新版系统保留交互式 Liquid Glass 和滚动边缘配置，较早系统使用系统 material 背景与默认滚动行为。系统版本分支不改变工作区模型、文件格式或保存流程。
+
+自动化测试传入 `FLORALMD_SKIP_DEBUG_INSTALL=YES`，避免 Debug 安装阶段写入 `/Applications`；日常 Xcode 构建的默认行为不变。

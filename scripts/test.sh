@@ -22,6 +22,7 @@ xcodebuild \
     -derivedDataPath build/TestDerivedData \
     -clonedSourcePackagesDirPath build/SourcePackages \
     CODE_SIGNING_ALLOWED=NO \
+    FLORALMD_SKIP_DEBUG_INSTALL=YES \
     -retry-tests-on-failure \
     -test-iterations 3 \
     test

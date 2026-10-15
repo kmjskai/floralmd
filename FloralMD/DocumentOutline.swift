@@ -152,7 +152,7 @@ struct DocumentOutlineControlButton: View {
         }
         .buttonStyle(.plain)
         .padding(4)
-        .glassEffect(.regular.interactive(), in: .circle)
+        .compatibleGlassEffect(in: Circle())
         .shadow(color: .black.opacity(0.12), radius: 9, y: 4)
         .accessibilityLabel(isExpanded ? "收起文档大纲" : "展开文档大纲")
         .help(isExpanded ? "收起文档大纲" : "展开文档大纲")

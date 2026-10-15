@@ -7,7 +7,7 @@
 <p align="center"><strong>在原生 macOS 工作区中，直接编辑 Markdown、Excalidraw 和图片。</strong></p>
 
 <p align="center">
-  <a href="#系统要求与权限"><img src="https://img.shields.io/badge/platform-macOS%2026.5%2B-0064e1?style=flat-square" alt="macOS 26.5+"></a>
+  <a href="#系统要求与权限"><img src="https://img.shields.io/badge/platform-macOS%2014.0%2B-0064e1?style=flat-square" alt="macOS 14.0+"></a>
   <a href="https://github.com/yingkaisun-kai/floralmd/releases/latest"><img src="https://img.shields.io/github/v/release/yingkaisun-kai/floralmd?style=flat-square&amp;color=2f7de1" alt="最新版本"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/yingkaisun-kai/floralmd?style=flat-square&amp;color=772678" alt="开源许可证"></a>
   <a href="https://github.com/yingkaisun-kai/floralmd/releases"><img src="https://img.shields.io/github/downloads/yingkaisun-kai/floralmd/total?style=flat-square&amp;color=ff6916" alt="累计下载量"></a>
@@ -44,10 +44,12 @@ FloralMD 是一款原生 macOS、本地文件优先的 Markdown 工作区编辑�
 
 ## 系统要求与权限
 
-- macOS 26.5 或更高版本
+- macOS 14.0 或更高版本（macOS 26 以下使用兼容界面样式）
 - Apple silicon 或 Intel Mac
 - FloralMD 只访问你明确选择的文件或工作区
 - 当前 macOS 版不使用 App Sandbox，以直接操作用户选择的普通文件
+
+macOS 14 支持已通过兼容构建检查，尚未在 macOS 14.6.1 实机验证；如遇问题，请通过 GitHub Issues 反馈。
 
 ## 安全、恢复与卸载
 
